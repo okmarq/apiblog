@@ -29,6 +29,12 @@
         <li>Role status: </li>
     </ul>
 
+    {% for message in app.flashes('notice') %}
+        <div class="flash-notice">
+            {{ message }}
+        </div>
+    {% endfor %}
+
     {{ form_start(form) }}
         {{ form_row(form.idImage) }}
         {{ form_row(form.message) }}
