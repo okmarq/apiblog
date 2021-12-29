@@ -46,6 +46,20 @@ class VRequestRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
+    public function update(VRequest $vRequest): VRequest
+    {        
+        $this->manager->persist($vRequest);
+        $this->manager->flush();
+
+        return $vRequest;
+    }
+
+    public function delete(VRequest $vRequest)
+    {        
+        $this->manager->persist($vRequest);
+        $this->manager->flush();
+    }
+
     // /**
     //  * @return VRequest[] Returns an array of VRequest objects
     //  */

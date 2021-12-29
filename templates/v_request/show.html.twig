@@ -35,12 +35,11 @@
         </div>
     {% endfor %}
 
-    {{ form_start(form) }}
-        {{ form_row(form.idImage) }}
-        {{ form_row(form.message) }}
-        {{ form_row(form.save) }}
-    {{ form_end(form) }}
-
-    <a href="{{ path('show_request', {id: app.user.id}) }}">Update request</a>
+    <div>
+        <p>idImage: {{ idImage }} <img src="{{ asset('uploads/images/' ~ idImage) }}" alt="ID image" width="250" height="250"> </p>
+        <p>message: {{ message }} </p>
+        <p>status: {{ status }} </p>
+        <p>reason: {{ reason }} </p>
+    </div>
 </div>
 {% endblock %}
