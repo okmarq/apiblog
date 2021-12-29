@@ -126,4 +126,18 @@ class VRequest
 
         return $this;
     }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'user' => $this->getUser(),
+            'idImage' => $this->getIdImage(),
+            'message' => $this->getMessage(),
+            'status' => $this->getStatus(),
+            'reason' => $this->getReason(),
+            'createdAt' => $this->getCreatedAt(),
+            'modifiedAt' => $this->getModifiedAt(),
+        ];
+    }
 }

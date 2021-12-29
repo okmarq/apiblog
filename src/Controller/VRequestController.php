@@ -28,6 +28,9 @@ class VRequestController extends AbstractController
     #[Route('/v/request', name: 'v_request')]
     public function index(Request $request, SluggerInterface $slugger): Response
     {
+        // get request from database and display here
+        $result = ['status' => 'No request made yet'];
+
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         /** @var \App\Entity\User $user */
@@ -66,20 +69,28 @@ class VRequestController extends AbstractController
 
             $this->vRequestRepository->create($newImageName, $message);
 
-            return $this->json(['status' => 'Your request has been received, response will be delivered to your email address @' . $user->getEmail()], Response::HTTP_CREATED);
+            $this->addFlash(
+                'notice',
+                'Request received. Response will be sent to ' . $user->getEmail()
+            );
         }
 
         return $this->renderForm('v_request/index.html.twig', [
             'form' => $form,
             'firstname' => $user->getfirstname(),
             'lastname' => $user->getLastname(),
-            'status' => $user->getLastname(),
         ]);
     }
 
+    #[Route('/v/request/{id}', name: 'show_request')]
     public function show(ManagerRegistry $doctrine, int $id): Response
     {
-        return $this->json([], Response::HTTP_OK);
+        $vRequest = $doctrine->getRepository(VRequest::class)->find($id);
+
+        if (!$vRequest) {
+            return $this->json(['status' => 'No request found'], Response::HTTP_OK);
+        }
+        return $this->json($vRequest, Response::HTTP_OK);
     }
 
     public function update()
