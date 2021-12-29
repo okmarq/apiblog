@@ -6,7 +6,6 @@ use App\Entity\VRequest;
 
 use App\Form\VRequestType;
 use App\Repository\VRequestRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
@@ -14,6 +13,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class VRequestController extends AbstractController
@@ -82,22 +85,95 @@ class VRequestController extends AbstractController
         ]);
     }
 
-    #[Route('/v/request/{id}', name: 'show_request')]
-    public function show(ManagerRegistry $doctrine, int $id): Response
+    #[Route('/v/request/{id}', name: 'show_request', methods: 'GET')]
+    public function show(int $id): Response
     {
-        $vRequest = $doctrine->getRepository(VRequest::class)->find($id);
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normilizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normilizers, $encoders);
+
+        $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
+
+        $data = [
+            'idImage' => $vRequest->getIdImage(),
+            'message' => $vRequest->getMessage(),
+            'status' => $vRequest->getStatus()->getName(),
+            'reason' => $vRequest->getReason(),
+            // 'createdAt' => $vRequest->getCreatedAt(),
+            // 'modifiedAt' => $vRequest->getModifiedAt(),
+        ];
 
         if (!$vRequest) {
-            return $this->json(['status' => 'No request found'], Response::HTTP_OK);
+            return $this->json(['status' => 'No request made yet'], Response::HTTP_OK);
         }
-        return $this->json($vRequest, Response::HTTP_OK);
+        return $this->render('v_request/show.html.twig', [
+            'firstname' => $user->getfirstname(),
+            'lastname' => $user->getLastname(),
+            'v_request' => $serializer->serialize($data, 'json', [
+                'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }
+            ]),
+            'idImage' => $data['idImage'],
+            'message' => $data['message'],
+            'status' => $data['status'],
+            'reason' => $data['reason'],
+        ]);
     }
 
-    public function update()
+    #[Route('/v/requests', name: 'get_requests', methods: 'GET')]
+    public function showAll(): Response
     {
-        $vRequest = new VRequest();
-        $vRequest->setIdImage(
+        $vRequests = $this->vRequestRepository->findAll();
+        $data = [];
+
+        foreach ($vRequests as $vRequest) {
+            $data = [
+                'id' => $vRequest->getId(),
+                'user' => $vRequest->getUser(),
+                'idImage' => $vRequest->getIdImage(),
+                'message' => $vRequest->getMessage(),
+                'status' => $vRequest->getStatus(),
+                'reason' => $vRequest->getReason(),
+                'createdAt' => $vRequest->getCreatedAt(),
+                'modifiedAt' => $vRequest->getModifiedAt(),
+            ];
+        }
+
+        if (!$vRequest) {
+            return $this->json(['status' => 'No requests found'], Response::HTTP_OK);
+        }
+        return $this->json($data, Response::HTTP_OK);
+    }
+
+    #[Route("/v/request/{id}", name: "update_request", methods: "PUT")]
+    public function update(int $id, Request $request): Response
+    {
+        $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
+        $data = json_decode($request->getContent(), true);
+
+        empty($data['idImage']) ? true : $vRequest->setIdImage(
             new File($this->getParameter('images_directory') . '/' . $vRequest->getIdImage())
         );
+        empty($data['message']) ? true : $vRequest->setMessage($data['message']);
+
+        $updatedVRequest = $this->vRequestRepository->update($vRequest);
+
+        return $this->json($updatedVRequest->toArray(), Response::HTTP_OK);
+    }
+
+    #[Route("/v/request/{id}", name: "delete_request", methods: "DELETE")]
+    public function delete(int $id, Request $request): Response
+    {
+        $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
+
+        $this->vRequestRepository->remove($vRequest);
+
+        return $this->json(['status' => 'Request deleted'], Response::HTTP_NO_CONTENT);
     }
 }
