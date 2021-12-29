@@ -6,6 +6,7 @@ use App\Entity\VRequest;
 
 use App\Form\VRequestType;
 use App\Repository\VRequestRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
@@ -19,6 +20,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 class VRequestController extends AbstractController
 {
     private $vRequestRepository;
@@ -33,8 +35,6 @@ class VRequestController extends AbstractController
     {
         // get request from database and display here
         $result = ['status' => 'No request made yet'];
-
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
@@ -76,11 +76,13 @@ class VRequestController extends AbstractController
                 'notice',
                 'Request received. Response will be sent to ' . $user->getEmail()
             );
+
+            return $this->redirectToRoute('show_request');
         }
 
         return $this->renderForm('v_request/index.html.twig', [
             'form' => $form,
-            'firstname' => $user->getfirstname(),
+            'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
         ]);
     }
@@ -88,11 +90,9 @@ class VRequestController extends AbstractController
     #[Route('/v/request/{id}', name: 'show_request', methods: 'GET')]
     public function show(int $id): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-        
+
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normilizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normilizers, $encoders);
@@ -103,52 +103,63 @@ class VRequestController extends AbstractController
             'idImage' => $vRequest->getIdImage(),
             'message' => $vRequest->getMessage(),
             'status' => $vRequest->getStatus()->getName(),
-            'reason' => $vRequest->getReason(),
-            // 'createdAt' => $vRequest->getCreatedAt(),
-            // 'modifiedAt' => $vRequest->getModifiedAt(),
+            'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
+            'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
+            'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
         ];
 
         if (!$vRequest) {
             return $this->json(['status' => 'No request made yet'], Response::HTTP_OK);
         }
         return $this->render('v_request/show.html.twig', [
-            'firstname' => $user->getfirstname(),
+            'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
-            'v_request' => $serializer->serialize($data, 'json', [
-                'circular_reference_handler' => function ($object) {
-                    return $object->getId();
-                }
-            ]),
+            // 'v_request' => $serializer->serialize($data, 'json', [
+            //     'circular_reference_handler' => function ($object) {
+            //         return $object->getId();
+            //     }
+            // ]),
             'idImage' => $data['idImage'],
             'message' => $data['message'],
             'status' => $data['status'],
             'reason' => $data['reason'],
+            'createdAt' => $data['createdAt'],
+            'modifiedAt' => $data['modifiedAt'],
         ]);
     }
 
     #[Route('/v/requests', name: 'get_requests', methods: 'GET')]
     public function showAll(): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normilizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normilizers, $encoders);
+
         $vRequests = $this->vRequestRepository->findAll();
         $data = [];
 
         foreach ($vRequests as $vRequest) {
-            $data = [
+            $data[] = [
                 'id' => $vRequest->getId(),
-                'user' => $vRequest->getUser(),
+                'lastname' => $vRequest->getUser()->getLastname(),
+                'firstname' => $vRequest->getUser()->getFirstname(),
                 'idImage' => $vRequest->getIdImage(),
                 'message' => $vRequest->getMessage(),
-                'status' => $vRequest->getStatus(),
-                'reason' => $vRequest->getReason(),
-                'createdAt' => $vRequest->getCreatedAt(),
-                'modifiedAt' => $vRequest->getModifiedAt(),
+                'status' => $vRequest->getStatus()->getName(),
+                'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
+                'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
+                'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
             ];
         }
 
-        if (!$vRequest) {
-            return $this->json(['status' => 'No requests found'], Response::HTTP_OK);
-        }
-        return $this->json($data, Response::HTTP_OK);
+        return $this->render('v_request/show_all.html.twig', [
+            'firstname' => $user->getFirstname(),
+            'lastname' => $user->getLastname(),
+            'data'=> $data,
+        ]);
     }
 
     #[Route("/v/request/{id}", name: "update_request", methods: "PUT")]
