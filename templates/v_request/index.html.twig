@@ -9,12 +9,32 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% else %}
+        <div class="mb-3">
+            <a href="{{ path('app_register') }}">Register</a> | <a href="{{ path('app_login') }}">Login</a>
+        </div>
+    {% endif %}
 
-    This friendly message is coming from:
+    <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
+
+    <p>This friendly message is coming from Locastic Blog API Admin ✅:</p>
     <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/projects/apiblog/src/Controller/VRequestController.php'|file_link(0) }}">src/Controller/VRequestController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/projects/apiblog/templates/v_request/index.html.twig'|file_link(0) }}">templates/v_request/index.html.twig</a></code></li>
+        <li>Submit your request in the form below</li>
+        <li>Request status: </li>
+        <li>Response status: </li>
+        <li>Role status: </li>
     </ul>
+
+    {{ form_start(form) }}
+        {{ form_row(form.idImage) }}
+        {{ form_row(form.message) }}
+        {{ form_row(form.save) }}
+    {{ form_end(form) }}
+
+    <a href="{#{ asset('uploads/images/' ~ form.imageFilename) }#}">View Image</a>
 </div>
 {% endblock %}
