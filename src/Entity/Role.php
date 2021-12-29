@@ -15,7 +15,7 @@ class Role
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 32, unique: true)]
     private $roleName;
 
     public function getId(): ?int
