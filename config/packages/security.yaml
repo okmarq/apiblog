@@ -39,7 +39,7 @@ security:
         # - { path: ^/api, roles: ROLE_ADMIN }
         # - { path: ^/user, roles: ROLE_ADMIN }
         # - { path: ^/post, roles: ROLE_BLOGGER }
-        # - { path: ^/dashboard, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/dashboard, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Status;
+use App\Entity\User;
 use App\Entity\VRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,9 +17,33 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class VRequestRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $manager;
+    private $registry;
+
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager)
     {
         parent::__construct($registry, VRequest::class);
+        $this->manager = $manager;
+        $this->registry = $registry;
+    }
+
+    public function create($idImage, $message)
+    {
+        $user = $this->registry->getRepository(User::class)->find(1);
+
+        $status = $this->registry->getRepository(Status::class)->find(1);
+
+        $newRequest = new VRequest();
+
+        $newRequest
+            ->setUser($user)
+            ->setIdImage($idImage)
+            ->setMessage($message)
+            ->setStatus($status)
+            ->setCreatedAt();
+        
+        $this->manager->persist($newRequest);
+        $this->manager->flush();
     }
 
     // /**
