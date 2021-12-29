@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,6 +35,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', length: 32)]
     private $lastname;
+
+    #[ORM\ManyToMany(targetEntity: Role::class)]
+    private $role;
+
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: VRequest::class, cascade: ['persist', 'remove'])]
+    private $vRequest;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Post::class)]
+    private $posts;
+
+    public function __construct()
+    {
+        $this->role = new ArrayCollection();
+        $this->posts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,9 +91,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
+
+        $userRoles = $this->getRole();
+
+        foreach ($userRoles as $userRole) {
+            $roles[] = $userRole->getRoleName();
+        }
 
         return array_unique($roles);
     }
@@ -143,6 +165,77 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Role[]
+     */
+    public function getRole(): Collection
+    {
+        return $this->role;
+    }
+
+    public function addRole(Role $role): self
+    {
+        if (!$this->role->contains($role)) {
+            $this->role[] = $role;
+        }
+
+        return $this;
+    }
+
+    public function removeRole(Role $role): self
+    {
+        $this->role->removeElement($role);
+
+        return $this;
+    }
+
+    public function getVRequest(): ?VRequest
+    {
+        return $this->vRequest;
+    }
+
+    public function setVRequest(VRequest $vRequest): self
+    {
+        // set the owning side of the relation if necessary
+        if ($vRequest->getUser() !== $this) {
+            $vRequest->setUser($this);
+        }
+
+        $this->vRequest = $vRequest;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Post[]
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post): self
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts[] = $post;
+            $post->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(Post $post): self
+    {
+        if ($this->posts->removeElement($post)) {
+            // set the owning side to null (unless already changed)
+            if ($post->getUser() === $this) {
+                $post->setUser(null);
+            }
+        }
 
         return $this;
     }
