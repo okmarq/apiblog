@@ -1,0 +1,11 @@
+<h1>Welcome {{ user }}!</h1>
+
+<p>
+    Your request has been {{ status }} with Reason: {{ reason }}
+</p>
+
+<p>
+    {% if(status == "Approved") %}
+        <a href="{{ path('create_post') }}">Click here</a> to create your post
+    {% endif %}
+</p>

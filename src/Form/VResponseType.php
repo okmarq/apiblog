@@ -17,7 +17,7 @@ class VResponseType extends AbstractType
     {
         $builder
             ->add('reason', TextareaType::class, [
-                'data' => "Your request has been updated, see response in your email"
+                'data' => "All checks were verified and you passed."
             ])
             ->add('status', EntityType::class, [
                 'class' => Status::class,

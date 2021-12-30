@@ -136,8 +136,8 @@ class VRequest
             'message' => $this->getMessage(),
             'status' => $this->getStatus(),
             'reason' => $this->getReason(),
-            'createdAt' => $this->getCreatedAt(),
-            'modifiedAt' => $this->getModifiedAt(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'modifiedAt' => ($this->getModifiedAt()) ? $this->getModifiedAt()->format('Y-m-d H:i:s') : null,
         ];
     }
 }

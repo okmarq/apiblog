@@ -22,23 +22,16 @@
     <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
 
     <p>This friendly message is coming from Locastic Blog API ✅:</p>
-    <p>Your response to {{ vr_firstname }} {{ vr_lastname }} </p>
+    <p>List of verification requests:</p>
     <ul>
-        <li>Role: {{ role }}</li>
-        <li>Email: {{ email }}</li>
-        <li>ID: {{ idImage }} <img src="{{ asset('uploads/images/' ~ idImage) }}" alt="ID image" width="250" height="250"></li>
-        <li>Message: {{ message }}</li>
-        <li>Current status: {{ status }}</li>
-        <li>Current Reason: {{ reason }}</li>
-        <li>Request made at: {{ createdAt }}</li>
-        <li>Request modified at: {{ modifiedAt }}</li>
-        <span>Admin's reason: {{ reason }}</span>
+        {% for request in data %}
+            <li>
+                <span>{{ request.firstname }} {{ request.lastname }}</span>
+                <a href='/admin/respond/{{ request.id }}'>respond</a>
+            </li>
+        {% else %}
+            <span>No requests found</span>
+        {% endfor %}
     </ul>
-
-    {{ form_start(form) }}
-        {{ form_row(form.status) }}
-        {{ form_row(form.reason) }}
-        {{ form_row(form.save) }}
-    {{ form_end(form) }}
 </div>
 {% endblock %}
