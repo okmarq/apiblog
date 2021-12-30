@@ -47,34 +47,13 @@ class VRequestRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
-    public function respond(string $reason, int $status_id, int $id): VRequest
-    {
-        $status = $this->registry->getRepository(Status::class)->find($status_id);
-        $newRequest = new VRequest();
-        $newRequest
-            ->setReason($reason)
-            ->setStatus($status);
-
-        // update user role to ROLE_BLOGGER
-        $updateUser = new User();
-        if ($status_id === 2) {
-            $role = $this->registry->getRepository(Role::class)->find(3);
-
-            $updateUser
-                ->addRole($role);
-        }
-
-        // send mail to $data['email']
-        $updateUser->getEmail();
-
-
-
-
-        $this->manager->persist($newRequest);
-        $this->manager->persist($updateUser);
+    public function respond($vRequest, User $user): VRequest
+    {;
+        $this->manager->persist($vRequest);
+        $this->manager->persist($user);
         $this->manager->flush();
 
-        return $newRequest;
+        return $vRequest;
     }
 
     public function update(VRequest $vRequest): VRequest

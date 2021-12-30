@@ -23,11 +23,18 @@
 
     <p>This friendly message is coming from Locastic Blog API ✅:</p>
     <p>List of verification requests:</p>
+
     <ul>
         {% for request in data %}
             <li>
-                <span>{{ request.firstname }} {{ request.lastname }}</span>
-                <a href='{{ path('respond', {id: request.id}) }}'>respond</a>
+                <b>{{ request.firstname }} {{ request.lastname }}</b>
+                {% if(request.status == "Verification requested") %}
+                    <a href='{{ path('respond', {id: request.id}) }}'>Respond</a>
+                {% elseif(request.status == "Approved") %}
+                    <a href='{#{ path('revoke', {id: request.id}) }#}'>Revoke</a>
+                {% elseif(request.status == "Denied") %}
+                    <a href='{#{ path('respond', {id: request.id}) }#}'>Reconsider</a>
+                {% endif %}
             </li>
         {% else %}
             <span>No requests found</span>
