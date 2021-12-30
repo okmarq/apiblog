@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\VRequest;
 use App\Form\VResponseType;
+use App\Repository\RoleRepository;
 use App\Repository\VRequestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,15 +15,17 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
-// #[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
     private $vRequestRepository;
+    private $roleRepository;
     private $mailer;
 
-    public function __construct(VRequestRepository $vRequestRepository, MailerInterface $mailer)
+    public function __construct(VRequestRepository $vRequestRepository, RoleRepository $roleRepository, MailerInterface $mailer)
     {
         $this->vRequestRepository = $vRequestRepository;
+        $this->roleRepository = $roleRepository;
         $this->mailer = $mailer;
     }
 
@@ -77,15 +79,16 @@ class AdminController extends AbstractController
                 $vRequest->setStatus($status);
             }
 
-            $userRole = $vRequest->getUser();
-            if ($status === 2) {
-                $role = $this->registry->getRepository(Role::class)->find(3);
-                $vRequest->setUser($vRequest->getUser()->addRole($role));
-                $userRole->addRole($role);
-            }
-
             empty($data_form['reason']) ? true : $vRequest->setReason($data_form['reason']);
             empty($data_form['status']) ? true : $vRequest->setStatus($data_form['status']);
+
+            $role = $this->roleRepository->findOneBy(['id'=> 2]);
+            $userRole = $vRequest->getUser();
+            if ($status == 2) {
+                $role = $this->roleRepository->findOneBy(['id'=> 3]);
+                $userRole = $vRequest->getUser()->addRole($role);
+            }
+            $userRole->addRole($role);
 
             $updatedRequest = $this->vRequestRepository->respond($vRequest, $userRole);
 

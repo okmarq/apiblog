@@ -47,10 +47,10 @@ class VRequestRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
-    public function respond($vRequest, User $user): VRequest
-    {;
+    public function respond($vRequest, $userRole): VRequest
+    {
         $this->manager->persist($vRequest);
-        $this->manager->persist($user);
+        $this->manager->persist($userRole);
         $this->manager->flush();
 
         return $vRequest;
