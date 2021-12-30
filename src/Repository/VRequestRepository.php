@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Role;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Entity\VRequest;
@@ -27,9 +28,9 @@ class VRequestRepository extends ServiceEntityRepository
         $this->registry = $registry;
     }
 
-    public function create($idImage, $message)
+    public function create(string $idImage, string $message, int $id)
     {
-        $user = $this->registry->getRepository(User::class)->find(1);
+        $user = $this->registry->getRepository(User::class)->find($id);
 
         $status = $this->registry->getRepository(Status::class)->find(1);
 
@@ -41,13 +42,43 @@ class VRequestRepository extends ServiceEntityRepository
             ->setMessage($message)
             ->setStatus($status)
             ->setCreatedAt();
-        
+
         $this->manager->persist($newRequest);
         $this->manager->flush();
     }
 
+    public function respond(string $reason, int $status_id, int $id): VRequest
+    {
+        $status = $this->registry->getRepository(Status::class)->find($status_id);
+        $newRequest = new VRequest();
+        $newRequest
+            ->setReason($reason)
+            ->setStatus($status);
+
+        // update user role to ROLE_BLOGGER
+        $updateUser = new User();
+        if ($status_id === 2) {
+            $role = $this->registry->getRepository(Role::class)->find(3);
+
+            $updateUser
+                ->addRole($role);
+        }
+
+        // send mail to $data['email']
+        $updateUser->getEmail();
+
+
+
+
+        $this->manager->persist($newRequest);
+        $this->manager->persist($updateUser);
+        $this->manager->flush();
+
+        return $newRequest;
+    }
+
     public function update(VRequest $vRequest): VRequest
-    {        
+    {
         $this->manager->persist($vRequest);
         $this->manager->flush();
 
@@ -55,7 +86,7 @@ class VRequestRepository extends ServiceEntityRepository
     }
 
     public function delete(VRequest $vRequest)
-    {        
+    {
         $this->manager->persist($vRequest);
         $this->manager->flush();
     }

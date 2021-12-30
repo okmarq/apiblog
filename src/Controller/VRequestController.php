@@ -14,10 +14,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -67,7 +63,7 @@ class VRequestController extends AbstractController
                 $vRequest->setMessage($message);
             }
 
-            $this->vRequestRepository->create($newImageName, $message);
+            $this->vRequestRepository->create($newImageName, $message, $user->getId());
 
             $this->addFlash(
                 'notice',
@@ -90,10 +86,6 @@ class VRequestController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        $encoders = [new XmlEncoder(), new JsonEncoder()];
-        $normilizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normilizers, $encoders);
-
         $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
 
         $data = [
@@ -111,11 +103,6 @@ class VRequestController extends AbstractController
         return $this->render('v_request/show.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
-            // 'v_request' => $serializer->serialize($data, 'json', [
-            //     'circular_reference_handler' => function ($object) {
-            //         return $object->getId();
-            //     }
-            // ]),
             'idImage' => $data['idImage'],
             'message' => $data['message'],
             'status' => $data['status'],
@@ -130,10 +117,6 @@ class VRequestController extends AbstractController
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-
-        $encoders = [new XmlEncoder(), new JsonEncoder()];
-        $normilizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normilizers, $encoders);
 
         $vRequests = $this->vRequestRepository->findAll();
         $data = [];

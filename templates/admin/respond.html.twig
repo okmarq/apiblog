@@ -22,16 +22,12 @@
     <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
 
     <p>This friendly message is coming from Locastic Blog API ✅:</p>
-    <p>List of verification requests:</p>
-    <ul>
-        {% for request in data %}
-            <li>
-                <span>{{ request.firstname }} {{ request.lastname }}</span>
-                
-            </li>
-        {% else %}
-            <span>No requests found</span>
-        {% endfor %}
-    </ul>
+    <p>Your response to {{ vr_firstname }} {{ vr_lastname }} </p>
+
+    {{ form_start(form) }}
+        {{ form_row(form.status) }}
+        {{ form_row(form.reason) }}
+        {{ form_row(form.save) }}
+    {{ form_end(form) }}
 </div>
 {% endblock %}
