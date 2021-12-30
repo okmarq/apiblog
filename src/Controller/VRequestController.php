@@ -33,9 +33,6 @@ class VRequestController extends AbstractController
     #[Route('/v/request', name: 'v_request')]
     public function index(Request $request, SluggerInterface $slugger): Response
     {
-        // get request from database and display here
-        $result = ['status' => 'No request made yet'];
-
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
@@ -155,7 +152,7 @@ class VRequestController extends AbstractController
             ];
         }
 
-        return $this->render('v_request/show_all.html.twig', [
+        return $this->render('admin/index.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'data'=> $data,
