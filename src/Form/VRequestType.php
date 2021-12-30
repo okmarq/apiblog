@@ -33,7 +33,7 @@ class VRequestType extends AbstractType
                 'data' => "I'd like to request the role of blogger"
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Request Verification'
+                'label' => 'Request'
             ]);
     }
 
