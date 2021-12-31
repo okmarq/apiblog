@@ -14,8 +14,6 @@
     {% if is_granted('ROLE_BLOGGER') %}
         <div class="mb-3">
             <a href='{{ path('create_post') }}'>Create new Post</a>
-            <a href='{#{ path('update_post', {'id': post.id}) }#}'>Edit Post</a>
-            <a href='{#{ path('delete_post', {'id': post.id}) }#}'>Delete Post</a>
         </div>
     {% else %}
         <div class="mb-3">
@@ -32,7 +30,5 @@
             <li>no post found</li>
         {% endfor %}
     </ul>
-
-    <p>This is where the single post will be with links to edit, delete or create new</p>
 </div>
 {% endblock %}

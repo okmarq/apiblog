@@ -21,12 +21,6 @@
 
     <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
 
-    {% for message in app.flashes('notice') %}
-        <div class="flash-notice">
-            {{ message }}
-        </div>
-    {% endfor %}
-
     {% if is_granted('ROLE_BLOGGER') %}
         {% if controller_name == 'Create' %}
             <p>Creating post</p>
