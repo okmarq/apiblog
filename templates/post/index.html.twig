@@ -25,7 +25,9 @@
 
     <ul>
         {% for post in posts %}
-            <li>{{post}}</li>
+            <li>
+                <a href='{{ path('show_post', {id: post.id}) }}'>{{post.title}}</a>
+            </li>
         {% else %}
             <li>no post found</li>
         {% endfor %}

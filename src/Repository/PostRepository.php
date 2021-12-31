@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @method Post|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,9 +16,34 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PostRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $manager;
+
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager)
     {
         parent::__construct($registry, Post::class);
+        $this->manager = $manager;
+    }
+
+    public function create(Post $post): Response
+    {
+        $this->manager->persist($post);
+        $this->manager->flush();
+
+        return new Response('Post created!', Response::HTTP_CREATED);
+    }
+
+    public function update(Post $post): Post
+    {
+        $this->manager->persist($post);
+        $this->manager->flush();
+
+        return $post;
+    }
+
+    public function delete(Post $post)
+    {
+        $this->manager->remove($post);
+        $this->manager->flush();
     }
 
     // /**
