@@ -38,6 +38,7 @@ security:
         # - { path: ^/api, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/dashboard, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/post/, roles: ROLE_USER }
         - { path: ^/post, roles: ROLE_BLOGGER }
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/user, roles: ROLE_ADMIN }

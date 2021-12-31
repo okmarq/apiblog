@@ -31,20 +31,34 @@
     <p>List of verification requests:</p>
 
     <ul>
+        {#% if(filter = 'filter_user') %#}
+
+        {#% elseif(filter = 'filter_status') %#}
+
+        {#% elseif(filter = 'order_date') %#}
+
+        {#% else %#}
+
+        {#% endif %#}
+
         {% for request in data %}
             <li>
                 <b>{{ request.firstname }} {{ request.lastname }}</b>
                 {% if(request.status == "Verification requested") %}
                     <a href='{{ path('respond', {id: request.id}) }}'>Respond</a>
                 {% elseif(request.status == "Approved") %}
-                    <a href='{#{ path('revoke', {id: request.id}) }#}'>Revoke</a>
+                    <a href='{{ path('revoke', {id: request.id}) }}'>Revoke</a>
                 {% elseif(request.status == "Denied") %}
-                    <a href='{#{ path('respond', {id: request.id}) }#}'>Reconsider</a>
+                    <a href='{{ path('respond', {id: request.id}) }}'>Reconsider</a>
                 {% endif %}
             </li>
         {% else %}
             <span>No requests found</span>
         {% endfor %}
     </ul>
+
+    <p>filter by user</p>
+    <p>filter by status</p>
+    <p>order by date created</p>
 </div>
 {% endblock %}

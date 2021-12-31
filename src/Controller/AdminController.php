@@ -29,11 +29,33 @@ class AdminController extends AbstractController
         $this->mailer = $mailer;
     }
 
-    #[Route('/admin', name: 'admin')]
+    #[Route('/admin/requests', name: 'get_requests', methods: 'GET')]
     public function index(): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $vRequests = $this->vRequestRepository->findAll();
+        $data = [];
+
+        foreach ($vRequests as $vRequest) {
+            $data[] = [
+                'id' => $vRequest->getId(),
+                'lastname' => $vRequest->getUser()->getLastname(),
+                'firstname' => $vRequest->getUser()->getFirstname(),
+                'idImage' => $vRequest->getIdImage(),
+                'message' => $vRequest->getMessage(),
+                'status' => $vRequest->getStatus()->getName(),
+                'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
+                'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
+                'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
+            ];
+        }
+
         return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
+            'firstname' => $user->getFirstname(),
+            'lastname' => $user->getLastname(),
+            'data' => $data,
         ]);
     }
 
@@ -100,10 +122,88 @@ class AdminController extends AbstractController
 
             $res = $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
 
-            $this->addFlash(
-                'notice',
-                $res
-            );
+            $this->json($updatedRequest, Response::HTTP_OK);
+            return $this->redirectToRoute('get_requests');
+        }
+
+        return $this->renderForm('admin/respond.html.twig', [
+            'form' => $form,
+            'firstname' => $user->getFirstname(),
+            'lastname' => $user->getLastname(),
+            'vr_firstname' => $data['firstname'],
+            'vr_lastname' => $data['lastname'],
+            'role' => $data['role'],
+            'email' => $data['email'],
+            'idImage' => $data['idImage'],
+            'message' => $data['message'],
+            'status' => $data['status'],
+            'reason' => $data['reason'],
+            'createdAt' => $data['createdAt'],
+            'modifiedAt' => $data['modifiedAt'],
+            'data' => $data,
+        ]);
+    }
+
+    #[Route('/admin/revoke/{id}', name: 'revoke')]
+    public function revoke(Request $request, int $id): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
+
+        $data = [
+            'id' => $vRequest->getId(),
+            'firstname' => $vRequest->getUser()->getFirstname(),
+            'lastname' => $vRequest->getUser()->getLastname(),
+            'role' => implode(', ', $vRequest->getUser()->getRoles()),
+            'email' => $vRequest->getUser()->getEmail(),
+            'idImage' => $vRequest->getIdImage(),
+            'message' => $vRequest->getMessage(),
+            'status' => $vRequest->getStatus()->getName(),
+            'reason' => $vRequest->getReason(),
+            'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
+            'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
+        ];
+
+        if (!$vRequest) {
+            return throw $this->createNotFoundException('No request made yet');
+        }
+
+        $form = $this->createForm(VResponseType::class, $vRequest);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data_form = json_decode($request->getContent(), true);
+
+            $reason = $form->get('reason')->getData();
+            $status = $form->get('status')->getData();
+
+            if ($reason) {
+                $vRequest->setReason("we apologize, requirement check not met");
+            }
+            if ($status) {
+                $vRequest->setStatus($status);
+            }
+
+            empty($data_form['reason']) ? true : $vRequest->setReason($data_form['reason']);
+            empty($data_form['status']) ? true : $vRequest->setStatus($data_form['status']);
+
+            $userRole = $vRequest->getUser();
+            if ($status->getId() == 3) {
+                $role = $this->roleRepository->findOneBy(['id'=> 3]);
+                $userRole->removeRole($role);
+            }
+
+            $updatedRequest = $this->vRequestRepository->revoke($vRequest, $userRole);
+
+            $statusName = $vRequest->getStatus()->getName();
+            $admin = $user->getFirstname() . ' ' . $user->getLastname();
+            $admin_email = $user->getEmail();
+            $user = $vRequest->getUser()->getFirstname() . ' ' . $vRequest->getUser()->getLastname();
+            $user_email = $vRequest->getUser()->getEmail();
+
+            $res = $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
 
             $this->json($updatedRequest, Response::HTTP_OK);
             return $this->redirectToRoute('get_requests');
