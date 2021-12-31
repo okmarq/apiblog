@@ -84,7 +84,7 @@ class AdminController extends AbstractController
 
             $role = $this->roleRepository->findOneBy(['id'=> 2]);
             $userRole = $vRequest->getUser();
-            if ($status == 2) {
+            if ($status->getId() == 2) {
                 $role = $this->roleRepository->findOneBy(['id'=> 3]);
                 $userRole = $vRequest->getUser()->addRole($role);
             }
