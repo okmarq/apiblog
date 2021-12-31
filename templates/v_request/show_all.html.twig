@@ -27,10 +27,10 @@
         {% for request in data %}
             <li>
                 <span>{{ request.firstname }} {{ request.lastname }}</span>
-                <a href='{{ path('respond/',{ id : request.id }) }}'>respond</a>
+                <a href='{{ path('respond',{ id : request.id }) }}'>respond</a>
             </li>
         {% else %}
-            <span>No requests found</span>
+            <span>No request found</span>
         {% endfor %}
     </ul>
 </div>
