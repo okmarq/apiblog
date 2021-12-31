@@ -24,12 +24,18 @@ class PostRepository extends ServiceEntityRepository
         $this->manager = $manager;
     }
 
-    public function create(Post $post): Response
+    public function create($user, $title, $slug, $content, $created)
     {
+        $post = new Post();
+        $post
+            ->setUser($user)
+            ->setTitle($title)
+            ->setSlug($slug)
+            ->setContent($content)
+            ->setCreatedAt($created);
+
         $this->manager->persist($post);
         $this->manager->flush();
-
-        return new Response('Post created!', Response::HTTP_CREATED);
     }
 
     public function update(Post $post): Post
