@@ -23,4 +23,28 @@ class PostController extends AbstractController
             'controller_name' => 'PostController',
         ]);
     }
+
+    #[Route('/post/{id}', name: 'show_post')]
+    public function show(int $id): Response
+    {
+        return $this->render('post/index.html.twig', [
+            'controller_name' => 'PostController',
+        ]);
+    }
+
+    #[Route('/post/{id}', name: 'update_post')]
+    public function update(int $id): Response
+    {
+        return $this->render('post/index.html.twig', [
+            'controller_name' => 'PostController',
+        ]);
+    }
+
+    #[Route('/post/{id}', name: 'delete_post')]
+    public function delete(int $id): Response
+    {
+        return $this->render('post/index.html.twig', [
+            'controller_name' => 'PostController',
+        ]);
+    }
 }

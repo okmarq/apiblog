@@ -9,6 +9,7 @@ use App\Entity\VRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @method VRequest|null find($id, $lockMode = null, $lockVersion = null)
@@ -28,7 +29,7 @@ class VRequestRepository extends ServiceEntityRepository
         $this->registry = $registry;
     }
 
-    public function create(string $idImage, string $message, int $id)
+    public function create(string $idImage, string $message, int $id): VRequest
     {
         $user = $this->registry->getRepository(User::class)->find($id);
 
@@ -45,6 +46,8 @@ class VRequestRepository extends ServiceEntityRepository
 
         $this->manager->persist($newRequest);
         $this->manager->flush();
+
+        return $newRequest;
     }
 
     public function respond($vRequest, $userRole): VRequest

@@ -41,6 +41,7 @@ security:
         - { path: ^/post, roles: ROLE_BLOGGER }
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/user, roles: ROLE_ADMIN }
+        - { path: ^/v/requests, roles: ROLE_ADMIN }
         - { path: ^/v, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

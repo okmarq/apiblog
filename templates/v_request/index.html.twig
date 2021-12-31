@@ -21,26 +21,34 @@
 
     <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
 
-    <p>This friendly message is coming from Locastic Blog API Admin ✅:</p>
-    <ul>
-        <li>Submit your request in the form below</li>
-        <li>Request status: </li>
-        <li>Response status: </li>
-        <li>Role status: </li>
-    </ul>
-
     {% for message in app.flashes('notice') %}
         <div class="flash-notice">
             {{ message }}
         </div>
     {% endfor %}
 
-    {{ form_start(form) }}
-        {{ form_row(form.idImage) }}
-        {{ form_row(form.message) }}
-        {{ form_row(form.save) }}
-    {{ form_end(form) }}
+    <p>This friendly message is coming from Locastic Blog API Admin ✅:</p>
+    <ul>
+        <li>Submit your request in the form below</li>
+        {% for datum in data %}
+            {% if(datum.status != "none") %}
+                <li>ID: {{ datum.idImage }}</li>
+                <li>ID: {{ datum.message }}</li>
+                <li>Request: {{ datum.status }}</li>
+                <li>Response: {{ datum.reason }}</li>
+                <li>Role: {{ datum.role}}</li>
+                <li>ID: {{ datum.createdAt }}</li>
+                <li>ID: {{ datum.modifiedAt ?? 'no update yet' }}</li>
 
-    <a href="{{ path('show_request', {id: app.user.id}) }}">Update request</a>
+                <a href="{{ path('show_request', {id: app.user.id}) }}">Update request</a>
+            {% else %}
+                {{ form_start(form) }}
+                    {{ form_row(form.idImage) }}
+                    {{ form_row(form.message) }}
+                    {{ form_row(form.save) }}
+                {{ form_end(form) }}
+            {% endif %}
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}
