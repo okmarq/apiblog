@@ -37,7 +37,7 @@
 
     {% if is_granted('ROLE_BLOGGER') %}
         <div class="mb-3">
-            <a href='{{ path('v_request') }}'>Create Post</a>
+            <a href='{{ path('create_post') }}'>Create Post</a>
         </div>
     {% else %}
         <div class="mb-3">
