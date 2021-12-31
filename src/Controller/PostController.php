@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -67,19 +68,15 @@ class PostController extends AbstractController
             $content = $form->get('content')->getData();
 
             if ($title && $content) {
-                $post->setUser($user);
                 $post->setTitle($title);
-                $post->setSlug($slugger->slug(strtolower($title . ' published ' . date('now'))));
                 $post->setContent($content);
+
+                $post->setUser($user);
+                $post->setSlug($slugger->slug(strtolower($title . ' published ' . date('now'))));
                 $post->setCreatedAt();
             }
 
-            $created = $this->postRepository->create($post);
-
-            $this->addFlash(
-                'notice',
-                $created
-            );
+            $this->api_create($request, $slugger, $post);
 
             return $this->redirectToRoute('posts');
         }
@@ -110,19 +107,24 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/{slug}', name: 'show_s_post', methods: "GET")]
-    public function showBySlug(int $slug): Response
+    public function showBySlug(string $slug): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
+        $post = $this->postRepository->findOneBy(['slug' => $slug]);
+
+        $data = $post->toArray();
+
         return $this->render('post/single.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
+            'post' => $data
         ]);
     }
 
     #[Route('/post/edit/{id}', name: 'update_post')]
-    public function updateForm(int $id, Request $request, SluggerInterface $slugger): Response
+    public function update(int $id, Request $request, SluggerInterface $slugger): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
@@ -146,12 +148,7 @@ class PostController extends AbstractController
             }
             $post->setModifiedAt();
 
-            $this->update($id, $request);
-
-            $this->addFlash(
-                'notice',
-                'post Updated!'
-            );
+            $this->api_update($id, $request);
 
             return $this->redirectToRoute('posts');
         }
@@ -164,8 +161,47 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/post/{id}', name: 'api_update_post', methods:"PUT")]
-    public function update(int $id, Request $request): Response
+    #[Route('/post/delete/{id}', name: 'delete_post')]
+    public function delete(int $id): Response
+    {
+        $this->api_delete($id);
+
+        return $this->redirectToRoute('posts');
+    }
+
+    #[Route('/post', name: 'api_create_post', methods: "POST")]
+    public function api_create(Request $request, SluggerInterface $slugger, Post $post): Response
+    {
+        if (!empty($post->getUser()) && !empty($post->getTitle()) && !empty($post->getSlug()) && !empty($post->getContent()) && !empty($post->getCreatedAt())) {
+            $this->postRepository->create($post);
+
+            return new Response('Post created', Response::HTTP_CREATED);
+        } else {
+            $data = json_decode($request->getContent(), true);
+
+            $api_user = $data['user'];
+            $api_title = $data['title'];
+            $api_content = $data['content'];
+
+            $newPost = new Post();
+
+            $newPost->setUser($api_user);
+            $newPost->setTitle($api_title);
+            $post->setSlug($slugger->slug(strtolower($api_title . ' published ' . date('now'))));
+            $newPost->setContent($api_content);
+            $newPost->setCreatedAt();
+
+            if (empty($api_user) || empty($api_title) || empty($api_slug) || empty($api_content) || empty($api_createdAt)) {
+                throw new NotFoundHttpException('Expecting mandatory parameters!');
+            }
+            $this->postRepository->create($newPost);
+
+            return new Response('Post created', Response::HTTP_CREATED);
+        }
+    }
+
+    #[Route('/post/{id}', name: 'api_update_post', methods: "PUT")]
+    public function api_update(int $id, Request $request): Response
     {
         $post = $this->postRepository->findOneBy(['id' => $id]);
         $data = json_decode($request->getContent(), true);
@@ -176,14 +212,6 @@ class PostController extends AbstractController
         $updated = $this->postRepository->update($post);
 
         return $this->json($updated->toArray(), Response::HTTP_OK);
-    }
-
-    #[Route('/post/delete/{id}', name: 'delete_post')]
-    public function delete(int $id): Response
-    {
-        $this->api_delete($id);
-
-        return $this->redirectToRoute('posts');
     }
 
     #[Route('/post/{id}', name: 'api_delete_post', methods: "DELETE")]
