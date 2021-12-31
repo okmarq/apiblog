@@ -9,12 +9,48 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% else %}
+        <div class="mb-3">
+            <a href="{{ path('app_register') }}">Register</a> | <a href="{{ path('app_login') }}">Login</a>
+        </div>
+    {% endif %}
 
-    This friendly message is coming from:
+    <h1>Hello {{ firstname}} {{lastname }}! ✅</h1>
+
+    <p>This friendly message is coming from Locastic Blog API Admin ✅:</p>
+
     <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/projects/apiblog/src/Controller/DashboardController.php'|file_link(0) }}">src/Controller/DashboardController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/projects/apiblog/templates/dashboard/index.html.twig'|file_link(0) }}">templates/dashboard/index.html.twig</a></code></li>
+        <li>Now that you're registered you can now see our blog posts</li>
+        {% if is_granted('ROLE_BLOGGER') %}
+        {% else %}
+            <li><a href='{{ path('v_request') }}'>Request a Verification</a> to attain a Bloger role</li>
+            <li>Our admin will then respond to your request</li>
+        {% endif %}
+        <li> you can then create read, update and delete your posts in the <a href='{{ path('post') }}'>post page</a></li>
+    </ul>
+
+    <h2>Our Blog</h2>
+
+    {% if is_granted('ROLE_BLOGGER') %}
+        <div class="mb-3">
+            <a href='{{ path('v_request') }}'>Create Post</a>
+        </div>
+    {% else %}
+        <div class="mb-3">
+            <span><a href='{{ path('v_request') }}'>Request a Verification</a> to attain a Bloger role</span>
+        </div>
+    {% endif %}
+
+    <ul>
+        {% for post in 1..5 %}
+            <li><a href='{{ path('post', {id: post}) }}'>Blog post title {{ post }}</a></li>
+        {% else %}
+            <li>no blog post found, <a href='{{ path('create_post') }}'>create blog post * {{ post }}</a></li>
+        {% endfor %}
     </ul>
 </div>
 {% endblock %}

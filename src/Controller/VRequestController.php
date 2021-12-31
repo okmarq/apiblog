@@ -26,11 +26,31 @@ class VRequestController extends AbstractController
         $this->vRequestRepository = $vRequestRepository;
     }
 
-    #[Route('/v/request', name: 'v_request')]
+    #[Route('/v/request', name: 'v_request', methods: ["POST", 'GET'])]
     public function index(Request $request, SluggerInterface $slugger): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
+
+        $vRequest = $this->vRequestRepository->findOneBy(['id' => $user->getVRequest()->getId()]);
+        $data = [];
+
+        if (!$vRequest) {
+            $data[] = ['status' => 'none'];
+        } else {
+            $data[] = [
+                'id' => $vRequest->getId(),
+                'firstname' => $vRequest->getUser()->getFirstname(),
+                'lastname' => $vRequest->getUser()->getLastname(),
+                'role' => implode(', ', $vRequest->getUser()->getRoles()),
+                'idImage' => $vRequest->getIdImage(),
+                'message' => $vRequest->getMessage(),
+                'status' => $vRequest->getStatus()->getName(),
+                'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
+                'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
+                'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
+            ];
+        }
 
         $vRequest = new VRequest();
 
@@ -63,20 +83,30 @@ class VRequestController extends AbstractController
                 $vRequest->setMessage($message);
             }
 
-            $this->vRequestRepository->create($newImageName, $message, $user->getId());
+            $res = $this->vRequestRepository->create($newImageName, $message, $user->getId());
 
             $this->addFlash(
                 'notice',
                 'Request received. Response will be sent to ' . $user->getEmail()
             );
 
-            return $this->redirectToRoute('show_request');
+            return $this->redirectToRoute('show_request', ['id' => $res->getId()]);
         }
 
         return $this->renderForm('v_request/index.html.twig', [
             'form' => $form,
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
+            'data' => $data,
+            // 'vr_firstname' => $data['firstname'],
+            // 'vr_lastname' => $data['lastname'],
+            // 'role' => $data['role'],
+            // 'idImage' => $data['idImage'],
+            // 'message' => $data['message'],
+            // 'status' => $data['status'],
+            // 'reason' => $data['reason'],
+            // 'createdAt' => $data['createdAt'],
+            // 'modifiedAt' => $data['modifiedAt'],
         ]);
     }
 
@@ -89,23 +119,28 @@ class VRequestController extends AbstractController
         $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
 
         $data = [
+            'id' => $vRequest->getId(),
             'idImage' => $vRequest->getIdImage(),
             'message' => $vRequest->getMessage(),
             'status' => $vRequest->getStatus()->getName(),
+            'role' => implode(', ', $vRequest->getUser()->getRoles()),
             'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
             'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
             'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
         ];
 
         if (!$vRequest) {
-            return $this->json(['status' => 'No request made yet'], Response::HTTP_OK);
+            return $this->json(['status' => 'No request made yet']);
         }
+
         return $this->render('v_request/show.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
+            'id' => $data['id'],
             'idImage' => $data['idImage'],
             'message' => $data['message'],
             'status' => $data['status'],
+            'role' => $data['role'],
             'reason' => $data['reason'],
             'createdAt' => $data['createdAt'],
             'modifiedAt' => $data['modifiedAt'],
@@ -138,7 +173,7 @@ class VRequestController extends AbstractController
         return $this->render('admin/index.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
-            'data'=> $data,
+            'data' => $data,
         ]);
     }
 

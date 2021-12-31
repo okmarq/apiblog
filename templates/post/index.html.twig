@@ -9,12 +9,36 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
 
-    This friendly message is coming from:
+    {% if is_granted('ROLE_BLOGGER') %}
+        <div class="mb-3">
+            <a href='{{ path('create_post') }}'>Create new Post</a>
+            <a href='{#{ path('update_post', {'id': post.id}) }#}'>Edit Post</a>
+            <a href='{#{ path('delete_post', {'id': post.id}) }#}'>Delete Post</a>
+        </div>
+    {% else %}
+        <div class="mb-3">
+            <span><a href='{{ path('request_verification') }}'>Request a Verification</a> to attain a Bloger role</span>
+        </div>
+    {% endif %}
+
     <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/projects/apiblog/src/Controller/PostController.php'|file_link(0) }}">src/Controller/PostController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/projects/apiblog/templates/post/index.html.twig'|file_link(0) }}">templates/post/index.html.twig</a></code></li>
+        {% for blog in blogs %}
+            <li>{{blog}}</li>
+        {% else %}
+            <li>no blog found</li>
+        {% endfor %}
     </ul>
+
+    <ul>
+        {% for post in posts %}
+            <li>{{post}}</li>
+        {% else %}
+            <li>no post found</li>
+        {% endfor %}
+    </ul>
+
+    <p>This is where the single post will be with links to edit, delete or create new</p>
 </div>
 {% endblock %}
