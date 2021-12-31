@@ -110,4 +110,17 @@ class Post
 
         return $this;
     }
+
+    public function toArray()
+    {
+        return [
+            'title' => $this->getTitle(),
+            'slug' => $this->getSlug(),
+            'content' => $this->getContent(),
+            'id' => $this->getId(),
+            'user' => $this->getUser(),
+            'createdAt' => $this->getCreatedAt(),
+            'modifiedAt' => ($this->getModifiedAt()) ? $this->getModifiedAt()->format('Y-m-d H:i:s') : null,
+        ];
+    }
 }
