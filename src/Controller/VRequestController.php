@@ -98,15 +98,6 @@ class VRequestController extends AbstractController
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'data' => $data,
-            // 'vr_firstname' => $data['firstname'],
-            // 'vr_lastname' => $data['lastname'],
-            // 'role' => $data['role'],
-            // 'idImage' => $data['idImage'],
-            // 'message' => $data['message'],
-            // 'status' => $data['status'],
-            // 'reason' => $data['reason'],
-            // 'createdAt' => $data['createdAt'],
-            // 'modifiedAt' => $data['modifiedAt'],
         ]);
     }
 

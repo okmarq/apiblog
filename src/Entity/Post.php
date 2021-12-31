@@ -118,8 +118,9 @@ class Post
             'slug' => $this->getSlug(),
             'content' => $this->getContent(),
             'id' => $this->getId(),
-            'user' => $this->getUser(),
-            'createdAt' => $this->getCreatedAt(),
+            'firstname' => $this->getUser()->getFirstname(),
+            'lastname' => $this->getUser()->getLastname(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
             'modifiedAt' => ($this->getModifiedAt()) ? $this->getModifiedAt()->format('Y-m-d H:i:s') : null,
         ];
     }
