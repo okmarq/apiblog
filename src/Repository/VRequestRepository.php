@@ -2,14 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Role;
 use App\Entity\Status;
 use App\Entity\User;
 use App\Entity\VRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @method VRequest|null find($id, $lockMode = null, $lockVersion = null)
