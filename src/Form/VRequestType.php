@@ -17,6 +17,7 @@ class VRequestType extends AbstractType
     {
         $builder
             ->add('idImage', FileType::class, [
+                'data_class' => null,
                 'label' => 'ID (jpeg, png)',
                 'constraints' => [
                     new File([
@@ -33,7 +34,7 @@ class VRequestType extends AbstractType
                 'data' => "I'd like to request the role of blogger"
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Request'
+                'label' => 'Send'
             ]);
     }
 

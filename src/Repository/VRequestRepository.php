@@ -57,6 +57,15 @@ class VRequestRepository extends ServiceEntityRepository
         return $vRequest;
     }
 
+    public function revoke($vRequest, $userRole): VRequest
+    {
+        $this->manager->persist($vRequest);
+        $this->manager->persist($userRole);
+        $this->manager->flush();
+
+        return $vRequest;
+    }
+
     public function update(VRequest $vRequest): VRequest
     {
         $this->manager->persist($vRequest);
@@ -67,7 +76,7 @@ class VRequestRepository extends ServiceEntityRepository
 
     public function delete(VRequest $vRequest)
     {
-        $this->manager->persist($vRequest);
+        $this->manager->remove($vRequest);
         $this->manager->flush();
     }
 

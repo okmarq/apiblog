@@ -26,13 +26,52 @@ class VRequestController extends AbstractController
         $this->vRequestRepository = $vRequestRepository;
     }
 
-    #[Route('/v/request', name: 'v_request', methods: ["POST", 'GET'])]
-    public function index(Request $request, SluggerInterface $slugger): Response
+    #[Route('/v/request/{id}', name: 'show_request', methods: 'GET')]
+    public function index(int $id): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        $vRequest = $this->vRequestRepository->findOneBy(['id' => $user->getVRequest()->getId()]);
+        $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
+
+        $data = [
+            'id' => $vRequest->getId(),
+            'idImage' => $vRequest->getIdImage(),
+            'message' => $vRequest->getMessage(),
+            'status' => $vRequest->getStatus()->getName(),
+            'role' => implode(', ', $vRequest->getUser()->getRoles()),
+            'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
+            'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
+            'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
+        ];
+
+        if (!$vRequest) {
+            return $this->json(['status' => 'No request made yet']);
+        }
+
+        return $this->render('v_request/show.html.twig', [
+            'firstname' => $user->getFirstname(),
+            'lastname' => $user->getLastname(),
+            'id' => $data['id'],
+            'idImage' => $data['idImage'],
+            'message' => $data['message'],
+            'status' => $data['status'],
+            'role' => $data['role'],
+            'reason' => $data['reason'],
+            'createdAt' => $data['createdAt'],
+            'modifiedAt' => $data['modifiedAt'],
+        ]);
+    }
+
+    #[Route('/v/request', name: 'v_request', methods: ["POST", 'GET'])]
+    public function create(Request $request, SluggerInterface $slugger): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $requestId = $user->getVRequest() ? $user->getVRequest()->getId() : null;
+        
+        $vRequest = $this->vRequestRepository->findOneBy(['id' => $requestId]);
         $data = [];
 
         if (!$vRequest) {
@@ -94,6 +133,7 @@ class VRequestController extends AbstractController
         }
 
         return $this->renderForm('v_request/index.html.twig', [
+            'controller_name' => 'Create',
             'form' => $form,
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
@@ -101,57 +141,24 @@ class VRequestController extends AbstractController
         ]);
     }
 
-    #[Route('/v/request/{id}', name: 'show_request', methods: 'GET')]
-    public function show(int $id): Response
+    #[Route("/v/request/edit/{id}", name: "update_request")]
+    public function update(int $id, Request $request, SluggerInterface $slugger): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
 
-        $data = [
-            'id' => $vRequest->getId(),
-            'idImage' => $vRequest->getIdImage(),
-            'message' => $vRequest->getMessage(),
-            'status' => $vRequest->getStatus()->getName(),
-            'role' => implode(', ', $vRequest->getUser()->getRoles()),
-            'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
-            'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
-            'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
-        ];
-
-        if (!$vRequest) {
-            return $this->json(['status' => 'No request made yet']);
-        }
-
-        return $this->render('v_request/show.html.twig', [
-            'firstname' => $user->getFirstname(),
-            'lastname' => $user->getLastname(),
-            'id' => $data['id'],
-            'idImage' => $data['idImage'],
-            'message' => $data['message'],
-            'status' => $data['status'],
-            'role' => $data['role'],
-            'reason' => $data['reason'],
-            'createdAt' => $data['createdAt'],
-            'modifiedAt' => $data['modifiedAt'],
-        ]);
-    }
-
-    #[Route('/v/requests', name: 'get_requests', methods: 'GET')]
-    public function showAll(): Response
-    {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-
-        $vRequests = $this->vRequestRepository->findAll();
         $data = [];
 
-        foreach ($vRequests as $vRequest) {
+        if (!$vRequest) {
+            $data[] = ['status' => 'none'];
+        } else {
             $data[] = [
                 'id' => $vRequest->getId(),
-                'lastname' => $vRequest->getUser()->getLastname(),
                 'firstname' => $vRequest->getUser()->getFirstname(),
+                'lastname' => $vRequest->getUser()->getLastname(),
+                'role' => implode(', ', $vRequest->getUser()->getRoles()),
                 'idImage' => $vRequest->getIdImage(),
                 'message' => $vRequest->getMessage(),
                 'status' => $vRequest->getStatus()->getName(),
@@ -161,30 +168,54 @@ class VRequestController extends AbstractController
             ];
         }
 
-        return $this->render('admin/index.html.twig', [
+        $vRequest->setIdImage(new File($this->getParameter('images_directory') . '/' . $vRequest->getIdImage()));
+
+        $form = $this->createForm(VRequestType::class, $vRequest);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $idImage */
+            $idImage = $form->get('idImage')->getData();
+            $message = $form->get('message')->getData();
+
+            if ($idImage) {
+                $originalFilename = pathinfo($idImage->getClientOriginalName(), PATHINFO_FILENAME);
+
+                $safeFilename = $slugger->slug($originalFilename);
+                $newImageName = $safeFilename . '-' . uniqid() . '.' . $idImage->guessExtension();
+
+                try {
+                    $idImage->move(
+                        $this->getParameter('images_directory'),
+                        $newImageName
+                    );
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+                $vRequest->setIdImage($newImageName);
+            }
+
+            if ($message) {
+                $vRequest->setMessage($message);
+            }
+
+            $vRequest->setModifiedAt();
+
+            $this->vRequestRepository->update($vRequest);
+
+            return $this->redirectToRoute('dashboard');
+        }
+
+        return $this->renderForm('v_request/index.html.twig', [
+            'controller_name' => 'Update',
+            'form' => $form,
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'data' => $data,
         ]);
     }
 
-    #[Route("/v/request/{id}", name: "update_request", methods: "PUT")]
-    public function update(int $id, Request $request): Response
-    {
-        $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
-        $data = json_decode($request->getContent(), true);
-
-        empty($data['idImage']) ? true : $vRequest->setIdImage(
-            new File($this->getParameter('images_directory') . '/' . $vRequest->getIdImage())
-        );
-        empty($data['message']) ? true : $vRequest->setMessage($data['message']);
-
-        $updatedVRequest = $this->vRequestRepository->update($vRequest);
-
-        return $this->json($updatedVRequest->toArray(), Response::HTTP_OK);
-    }
-
-    #[Route("/v/request/{id}", name: "delete_request", methods: "DELETE")]
+    #[Route("/v/request/delete/{id}", name: "delete_request", methods: "DELETE")]
     public function delete(int $id, Request $request): Response
     {
         $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);

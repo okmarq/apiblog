@@ -21,15 +21,22 @@
 
     <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
 
-    {% for message in app.flashes('notice') %}
-        <div class="flash-notice">
-            {{ message }}
-        </div>
-    {% endfor %}
+    {% if controller_name == 'Create' %}
+        <p>making request</p>
+    {% else %}
+        <p>Editing request</p>
+    {% endif %}
 
     <p>This friendly message is coming from Locastic Blog API Admin ✅:</p>
     <ul>
         <li>Submit your request in the form below</li>
+            
+        {{ form_start(form) }}
+            {{ form_row(form.idImage) }}
+            {{ form_row(form.message) }}
+            {{ form_row(form.save) }}
+        {{ form_end(form) }}
+
         {% for datum in data %}
             {% if(datum.status != "none") %}
                 <li>ID: {{ datum.idImage }}</li>
@@ -40,13 +47,9 @@
                 <li>ID: {{ datum.createdAt }}</li>
                 <li>ID: {{ datum.modifiedAt ?? 'no update yet' }}</li>
 
-                <a href="{{ path('show_request', {id: app.user.id}) }}">Update request</a>
-            {% else %}
-                {{ form_start(form) }}
-                    {{ form_row(form.idImage) }}
-                    {{ form_row(form.message) }}
-                    {{ form_row(form.save) }}
-                {{ form_end(form) }}
+                {% if controller_name == 'Create' %}
+                    <a href="{{ path('update_request', {id: datum.id}) }}">Update request</a>
+                {% endif %}
             {% endif %}
         {% endfor %}
     </ul>

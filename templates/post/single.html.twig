@@ -25,25 +25,23 @@
                 <a href='{{ path('delete_post', {'id': post.id}) }}'>Delete this Post</a>
             </span>
         </div>
-
-        <ul>
-            {% if(post) %}
-                <li>{{ post.title }}</li>
-                <li>{{ post.slug }}</li>
-                <li>{{ post.content }}</li>
-                <li>{{ post.id }}</li>
-                <li>{{ post.firstname }}</li>
-                <li>{{ post.lastname }}</li>
-                <li>{{ post.createdAt }}</li>
-                <li>{{ post.modifiedAt ?? 'no update yet' }}</li>
-            {% else %}
-                <li>no post found</li>
-            {% endif %}
-        </ul>
     {% else %}
         <div class="mb-3">
             <span><a href='{{ path('v_request') }}'>Request a Verification</a> to attain a Bloger role</span>
         </div>
     {% endif %}
+
+    <div class="mb-3">
+        {% if(post) %}
+            <div class="mb-3">
+                <small>Author: {{ post.firstname }} {{ post.lastname }}</small><br>
+                <small>published: {{ post.modifiedAt ?? post.createdAt }}</small>
+            </div>
+            <b>{{ post.title }}</b>
+            <p>{{ post.content }}</p>
+        {% else %}
+            <li>no post found</li>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

@@ -21,23 +21,38 @@
 
     <h1>Hello {{ firstname}} {{lastname }}! ✅</h1>
 
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="mb-3">
+            <p><a href='{{ path('get_requests') }}'>see requests</a></p>
+            {% if(v_request.status == 'Verification requested') %}
+                <p><a href='{{ path('show_request', {'id': v_request.id}) }}'>your request</a></p>
+            {% endif %}
+        </div>
+    {% else %}
+        {% if(v_request.status == 'Verification requested') %}
+            <div class="mb-3">
+                <p><a href='{{ path('show_request', {'id': v_request.id}) }}'>your request</a></p>
+            </div>
+        {% endif %}
+    {% endif %}
+
     <p>This friendly message is coming from Locastic Blog API Admin ✅:</p>
 
-    <ul>
-        <li>Now that you're registered you can now see our blog posts</li>
+    <div>
+        <p>Now that you're registered you can now see our blog posts</p>
         {% if is_granted('ROLE_BLOGGER') %}
         {% else %}
-            <li><a href='{{ path('v_request') }}'>Request a Verification</a> to attain a Bloger role</li>
-            <li>Our admin will then respond to your request</li>
+            <p><a href='{{ path('v_request') }}'>Request a Verification</a> to attain a Bloger role</p>
+            <p>Our admin will then respond to your request</p>
+            <p> you can then create read, update and delete your posts in the <a href='{{ path('posts') }}'>post page</a></p>
         {% endif %}
-        <li> you can then create read, update and delete your posts in the <a href='{{ path('post') }}'>post page</a></li>
-    </ul>
+    </div>
 
     <h2>Our Blog</h2>
 
     {% if is_granted('ROLE_BLOGGER') %}
         <div class="mb-3">
-            <a href='{{ path('create_post') }}'>Create Post</a>
+            <small><a href='{{ path('create_post') }}'>Create Post</a></small>
         </div>
     {% else %}
         <div class="mb-3">
@@ -45,12 +60,12 @@
         </div>
     {% endif %}
 
-    <ul>
-        {% for post in 1..5 %}
-            <li><a href='{{ path('post', {id: post}) }}'>Blog post title {{ post }}</a></li>
+    <div>
+        {% for post in posts %}
+            <p><a href='{{ path('show_post', {id: post.id}) }}'>{{post.title}}</a></p>
         {% else %}
-            <li>no blog post found, <a href='{{ path('create_post') }}'>create blog post * {{ post }}</a></li>
+            <p>no blog post found, <a href='{{ path('create_post') }}'>create post</a></p>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 {% endblock %}
