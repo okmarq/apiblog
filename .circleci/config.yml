@@ -13,7 +13,7 @@ jobs:
           MYSQL_USER: root
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
           MYSQL_PASSWORD: ""
-      - image: mysql:5.7
+      - image: circleci/mysql:5.7
         command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin --innodb-large-prefix=true --innodb-file-format=Barracuda
         environment:
           MYSQL_USER: root
@@ -40,11 +40,6 @@ jobs:
             - vendor
       - run: cp .env .env.local
       - run: symfony console security:check
-      - run: curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer
-      - run: chmod a+x php-cs-fixer
-      - run: ./php-cs-fixer --diff --dry-run -v --allow-risky=yes fix
-      - run: php -d memory_limit=-1 vendor/bin/phpstan analyse src --level max
-      - run: php -d memory_limit=-1 vendor/bin/simple-phpunit
       - run:
           name: Run web server
           command: symfony console server:run
