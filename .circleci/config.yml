@@ -31,10 +31,10 @@ jobs:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
-      - run: php bin/console security:check
+      - run: symfony check:security
       - run:
           name: Run web server
-          command: php bin/console server:run
+          command: symfony console server:run
           background: true
       - run:
           name: "Run PhpUnit tests"
@@ -53,4 +53,4 @@ workflows:
           # pre-steps:
           #   - run: command-that-run-before-deploying
           post-steps:
-            - run: php bin/console doctrine:datebase:create
+            - run: symfony console doctrine:datebase:create
