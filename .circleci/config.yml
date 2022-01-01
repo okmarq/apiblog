@@ -31,10 +31,10 @@ jobs:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
-      - run:
-          name: Run web server
-          command: php bin/console server:start
-          background: true
+      # - run:
+      #     name: Run web server
+      #     command: php bin/console server:start
+      #     background: true
       - run:
           name: "Run PhpUnit tests"
           command: php ./bin/phpunit
