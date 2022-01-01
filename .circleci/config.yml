@@ -38,6 +38,12 @@ jobs:
       - run:
           name: "Run PhpUnit tests"
           command: php ./bin/phpunit
+      - store_artifacts:
+          path: phpunit/apiblog/docs/
+          destination: circleci-docs
+      - store_test_results:
+          path: test-results
+
 
 workflows:
   heroku_deploy:
@@ -51,5 +57,5 @@ workflows:
               only: main
           # pre-steps:
           #   - run: command-that-run-before-deploying
-          post-steps:
-            - run: php bin/console doctrine:datebase:create
+          # post-steps:
+          #   - run: php bin/console doctrine:datebase:create
