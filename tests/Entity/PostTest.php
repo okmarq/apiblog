@@ -8,13 +8,13 @@ use PHPUnit\Framework\TestCase;
 
 class PostTest extends TestCase
 {
-    public function testconstructor()
+    public function test_constructor()
     {
         $post = new Post();
         $this->assertContainsOnlyInstancesOf(Post::class, [new Post]);
     }
 
-    public function testGettingUser()
+    public function test_getUser()
     {
         $post = new Post();
         $user = new User();
@@ -23,7 +23,7 @@ class PostTest extends TestCase
         $this->assertIsObject($post->getUser());
     }
 
-    public function testSettingUser()
+    public function test_setUser()
     {
         $post = new Post();
         $user = new User();
@@ -31,22 +31,21 @@ class PostTest extends TestCase
         $this->assertIsObject($post->setUser($user));
     }
 
-    public function testGettingTitle()
+    public function test_getTitle()
     {
         $post = new Post();
         $post->setTitle('Title');
         $this->assertIsString($post->getTitle());
     }
 
-    public function testSettingTitle()
+    public function test_setTitle()
     {
         $post = new Post();
-        $title = 'Title';
-        $post->setTitle($title);
-        $this->assertEquals($title, $post->getTitle());
+        $post->setTitle('Title');
+        $this->assertEquals('Title', $post->getTitle());
     }
 
-    public function testGettingSlug()
+    public function test_getSlug()
     {
         $post = new Post();
         $post->setTitle('Title');
@@ -54,7 +53,7 @@ class PostTest extends TestCase
         $this->assertIsString($post->getSlug());
     }
 
-    public function testSettingContent()
+    public function test_setContent()
     {
         $post = new Post();
         $content = 'Content';
@@ -62,18 +61,26 @@ class PostTest extends TestCase
         $this->assertEquals($content, $post->getContent());
     }
 
-    public function testGettingCreatedAndModifiedAt()
+    public function test_getContent()
+    {
+        $post = new Post();
+        $post->setContent('Comtent');
+        $this->assertIsString($post->getContent());
+    }
+
+    public function test_getCreatedAndModifiedAt()
     {
         $post = new Post();
         $this->assertInstanceOf(\DateTimeImmutable::class, $post->getModifiedAt());
         $this->assertInstanceOf(\DateTimeImmutable::class, $post->getCreatedAt());
     }
 
-    public function testToArray()
+    public function test_toArray()
     {
         $post = new Post();
         $user = new User();
         $post->setUser($user);
+        
         $this->assertArrayHasKey('title', $post->toArray());
         $this->assertArrayHasKey('slug', $post->toArray());
         $this->assertArrayHasKey('content', $post->toArray());

@@ -136,7 +136,7 @@ class VRequest
         return $this->modifiedAt;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'id' => $this->getId(),
