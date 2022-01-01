@@ -33,7 +33,7 @@ jobs:
             - vendor
       - run:
           name: Run web server
-          command: symfony console server:run
+          command: php bin/console server:start
           background: true
       - run:
           name: "Run PhpUnit tests"
@@ -52,4 +52,4 @@ workflows:
           # pre-steps:
           #   - run: command-that-run-before-deploying
           post-steps:
-            - run: symfony console doctrine:datebase:create
+            - run: php bin/console doctrine:datebase:create
