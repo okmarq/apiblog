@@ -5,38 +5,61 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\VRequestRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: VRequestRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => 'read'],
+    denormalizationContext: ['groups' => 'write'],
+    attributes:['route_prefix'=>'/requests'],
+    itemOperations: ['get', 'put']
+)]
 class VRequest
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups('read')]
     private $id;
 
     #[ORM\OneToOne(inversedBy: 'vRequest', targetEntity: User::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('read')]
     private $user;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['read', 'write'])]
+    #[Assert\NotBlank()]
     private $idImage;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['read', 'write'])]
+    #[Assert\NotBlank()]
     private $message;
 
     #[ORM\ManyToOne(targetEntity: Status::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('read')]
     private $status;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups('read')]
     private $reason;
 
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[Groups('read')]
     private $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'], columnDefinition: "DATETIME on update CURRENT_TIMESTAMP")]
+    #[Groups('read')]
     private $modifiedAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable('now');
+        $this->modifiedAt = new \DateTimeImmutable('now');
+    }
 
     public function getId(): ?int
     {
@@ -108,10 +131,12 @@ class VRequest
         return $this->createdAt;
     }
 
+    #[ORM\PrePersist]
     public function setCreatedAt(): self
     {
-        $this->createdAt = new \DateTimeImmutable('now');
-
+        if ($this->createdAt == null) {
+            $this->createdAt = new \DateTimeImmutable('now');
+        }
         return $this;
     }
 
@@ -120,10 +145,12 @@ class VRequest
         return $this->modifiedAt;
     }
 
+    #[ORM\PrePersist]
     public function setModifiedAt(): self
     {
-        $this->modifiedAt = new \DateTimeImmutable('now');
-
+        if ($this->modifiedAt == null) {
+            $this->modifiedAt = new \DateTimeImmutable('now');
+        }
         return $this;
     }
 
