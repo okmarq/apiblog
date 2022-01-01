@@ -26,7 +26,7 @@ jobs:
             - composer-v1-{{ checksum "composer.lock" }}
             - composer-v1-
 
-      - run: cp .env.example
+      - run: cp .env.example ~/apiblog
       - run: composer install -n --prefer-dist --no-scripts
       - save_cache:
           key: composer-v1-{{ checksum "composer.lock" }}
