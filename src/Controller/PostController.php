@@ -73,7 +73,6 @@ class PostController extends AbstractController
 
                 $post->setUser($user);
                 $post->setSlug($slugger->slug(strtolower($title . ' published ' . date('now'))));
-                $post->setCreatedAt();
             }
 
             $this->api_create($request, $slugger, $post);
@@ -146,7 +145,6 @@ class PostController extends AbstractController
             if ($content) {
                 $post->setContent($content);
             }
-            $post->setModifiedAt();
 
             $this->api_update($id, $request);
 
@@ -189,7 +187,6 @@ class PostController extends AbstractController
             $newPost->setTitle($api_title);
             $post->setSlug($slugger->slug(strtolower($api_title . ' published ' . date('now'))));
             $newPost->setContent($api_content);
-            $newPost->setCreatedAt();
 
             if (empty($api_user) || empty($api_title) || empty($api_slug) || empty($api_content) || empty($api_createdAt)) {
                 throw new NotFoundHttpException('Expecting mandatory parameters!');

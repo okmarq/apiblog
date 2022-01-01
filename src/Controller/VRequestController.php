@@ -199,8 +199,6 @@ class VRequestController extends AbstractController
                 $vRequest->setMessage($message);
             }
 
-            $vRequest->setModifiedAt();
-
             $this->vRequestRepository->update($vRequest);
 
             return $this->redirectToRoute('dashboard');

@@ -131,27 +131,9 @@ class VRequest
         return $this->createdAt;
     }
 
-    #[ORM\PrePersist]
-    public function setCreatedAt(): self
-    {
-        if ($this->createdAt == null) {
-            $this->createdAt = new \DateTimeImmutable('now');
-        }
-        return $this;
-    }
-
     public function getModifiedAt(): ?\DateTimeImmutable
     {
         return $this->modifiedAt;
-    }
-
-    #[ORM\PrePersist]
-    public function setModifiedAt(): self
-    {
-        if ($this->modifiedAt == null) {
-            $this->modifiedAt = new \DateTimeImmutable('now');
-        }
-        return $this;
     }
 
     public function toArray()

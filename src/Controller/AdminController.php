@@ -79,51 +79,6 @@ class AdminController extends AbstractController
             ];
         }
 
-        // $ord = [];
-        // foreach ($vros as $vro) {
-        //     $ord[] = [
-        //         'id' => $vro->getId(),
-        //         'lastname' => $vro->getUser()->getLastname(),
-        //         'firstname' => $vro->getUser()->getFirstname(),
-        //         'idImage' => $vro->getIdImage(),
-        //         'message' => $vro->getMessage(),
-        //         'status' => $vro->getStatus()->getName(),
-        //         'reason' => ($vro->getReason()) ? $vro->getReason() : 'please wait for a response',
-        //         'createdAt' => $vro->getCreatedAt()->format('Y-m-d H:i:s'),
-        //         'modifiedAt' => ($vro->getModifiedAt()) ? $vro->getModifiedAt()->format('Y-m-d H:i:s') : null,
-        //     ];
-        // }
-
-        // $flu = [];
-        // foreach ($vrus as $vru) {
-        //     $flu[] = [
-        //         'id' => $vru->getId(),
-        //         'lastname' => $vru->getUser()->getLastname(),
-        //         'firstname' => $vru->getUser()->getFirstname(),
-        //         'idImage' => $vru->getIdImage(),
-        //         'message' => $vru->getMessage(),
-        //         'status' => $vru->getStatus()->getName(),
-        //         'reason' => ($vru->getReason()) ? $vru->getReason() : 'please wait for a response',
-        //         'createdAt' => $vru->getCreatedAt()->format('Y-m-d H:i:s'),
-        //         'modifiedAt' => ($vru->getModifiedAt()) ? $vru->getModifiedAt()->format('Y-m-d H:i:s') : null,
-        //     ];
-        // }
-
-        // $fls = [];
-        // foreach ($vrss as $vrs) {
-        //     $fls[] = [
-        //         'id' => $vrs->getId(),
-        //         'lastname' => $vrs->getUser()->getLastname(),
-        //         'firstname' => $vrs->getUser()->getFirstname(),
-        //         'idImage' => $vrs->getIdImage(),
-        //         'message' => $vrs->getMessage(),
-        //         'status' => $vrs->getStatus()->getName(),
-        //         'reason' => ($vrs->getReason()) ? $vrs->getReason() : 'please wait for a response',
-        //         'createdAt' => $vrs->getCreatedAt()->format('Y-m-d H:i:s'),
-        //         'modifiedAt' => ($vrs->getModifiedAt()) ? $vrs->getModifiedAt()->format('Y-m-d H:i:s') : null,
-        //     ];
-        // }
-
         return $this->render('admin/index.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),

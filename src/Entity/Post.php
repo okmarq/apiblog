@@ -136,28 +136,12 @@ class Post
         return $this->createdAt;
     }
 
-    public function setCreatedAt(): self
-    {
-        if ($this->createdAt == null) {
-            $this->createdAt = new \DateTimeImmutable('now');
-        }
-        return $this;
-    }
-
     public function getModifiedAt(): ?\DateTimeImmutable
     {
         return $this->modifiedAt;
     }
 
-    public function setModifiedAt(): self
-    {
-        if ($this->modifiedAt == null) {
-            $this->modifiedAt = new \DateTimeImmutable('now');
-        }
-        return $this;
-    }
-
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'title' => $this->getTitle(),
