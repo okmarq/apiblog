@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\VResponseType;
 use App\Repository\RoleRepository;
+use App\Repository\StatusRepository;
 use App\Repository\UserRepository;
 use App\Repository\VRequestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -21,26 +22,49 @@ class AdminController extends AbstractController
 {
     private $vRequestRepository;
     private $userRepository;
+    private $statusRepository;
     private $roleRepository;
     private $mailer;
 
-    public function __construct(VRequestRepository $vRequestRepository, RoleRepository $roleRepository, UserRepository $userRepository, MailerInterface $mailer)
+    public function __construct(VRequestRepository $vRequestRepository, RoleRepository $roleRepository, UserRepository $userRepository, StatusRepository $statusRepository, MailerInterface $mailer)
     {
         $this->vRequestRepository = $vRequestRepository;
         $this->userRepository = $userRepository;
+        $this->statusRepository = $statusRepository;
         $this->roleRepository = $roleRepository;
         $this->mailer = $mailer;
     }
 
     #[Route('/admin/requests', name: 'get_requests', methods: 'GET')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        $vRequests = $this->vRequestRepository->findAll();
-        $data = [];
+        $o = $request->query->get('o');
+        $uid = $request->query->get('uid');
+        $sid = $request->query->get('sid');
 
+        $stats = $this->statusRepository->findAll();
+        $status = [];
+        foreach ($stats as $stat) {
+            $status[] = [
+                'id' => $stat->getId(),
+                'name' => $stat->getName()
+            ];
+        }
+
+        $vRequests = $this->vRequestRepository->findAll();
+
+        if ($o) {
+            $vRequests = $this->vRequestRepository->orderByCreated($o);
+        } elseif ($uid) {
+            $vRequests = $this->vRequestRepository->filterByUser($uid);
+        } elseif ($sid) {
+            $vRequests = $this->vRequestRepository->filterByStatus($sid);
+        }
+
+        $data = [];
         foreach ($vRequests as $vRequest) {
             $data[] = [
                 'id' => $vRequest->getId(),
@@ -55,10 +79,59 @@ class AdminController extends AbstractController
             ];
         }
 
+        // $ord = [];
+        // foreach ($vros as $vro) {
+        //     $ord[] = [
+        //         'id' => $vro->getId(),
+        //         'lastname' => $vro->getUser()->getLastname(),
+        //         'firstname' => $vro->getUser()->getFirstname(),
+        //         'idImage' => $vro->getIdImage(),
+        //         'message' => $vro->getMessage(),
+        //         'status' => $vro->getStatus()->getName(),
+        //         'reason' => ($vro->getReason()) ? $vro->getReason() : 'please wait for a response',
+        //         'createdAt' => $vro->getCreatedAt()->format('Y-m-d H:i:s'),
+        //         'modifiedAt' => ($vro->getModifiedAt()) ? $vro->getModifiedAt()->format('Y-m-d H:i:s') : null,
+        //     ];
+        // }
+
+        // $flu = [];
+        // foreach ($vrus as $vru) {
+        //     $flu[] = [
+        //         'id' => $vru->getId(),
+        //         'lastname' => $vru->getUser()->getLastname(),
+        //         'firstname' => $vru->getUser()->getFirstname(),
+        //         'idImage' => $vru->getIdImage(),
+        //         'message' => $vru->getMessage(),
+        //         'status' => $vru->getStatus()->getName(),
+        //         'reason' => ($vru->getReason()) ? $vru->getReason() : 'please wait for a response',
+        //         'createdAt' => $vru->getCreatedAt()->format('Y-m-d H:i:s'),
+        //         'modifiedAt' => ($vru->getModifiedAt()) ? $vru->getModifiedAt()->format('Y-m-d H:i:s') : null,
+        //     ];
+        // }
+
+        // $fls = [];
+        // foreach ($vrss as $vrs) {
+        //     $fls[] = [
+        //         'id' => $vrs->getId(),
+        //         'lastname' => $vrs->getUser()->getLastname(),
+        //         'firstname' => $vrs->getUser()->getFirstname(),
+        //         'idImage' => $vrs->getIdImage(),
+        //         'message' => $vrs->getMessage(),
+        //         'status' => $vrs->getStatus()->getName(),
+        //         'reason' => ($vrs->getReason()) ? $vrs->getReason() : 'please wait for a response',
+        //         'createdAt' => $vrs->getCreatedAt()->format('Y-m-d H:i:s'),
+        //         'modifiedAt' => ($vrs->getModifiedAt()) ? $vrs->getModifiedAt()->format('Y-m-d H:i:s') : null,
+        //     ];
+        // }
+
         return $this->render('admin/index.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
             'data' => $data,
+            'status' => $status,
+            'o' => $o,
+            'uid' => $uid,
+            'sid' => $sid,
         ]);
     }
 
@@ -107,10 +180,10 @@ class AdminController extends AbstractController
             empty($data_form['reason']) ? true : $vRequest->setReason($data_form['reason']);
             empty($data_form['status']) ? true : $vRequest->setStatus($data_form['status']);
 
-            $role = $this->roleRepository->findOneBy(['id'=> 2]);
+            $role = $this->roleRepository->findOneBy(['id' => 2]);
             $userRole = $vRequest->getUser();
             if ($status->getId() == 2) {
-                $role = $this->roleRepository->findOneBy(['id'=> 3]);
+                $role = $this->roleRepository->findOneBy(['id' => 3]);
                 $userRole = $vRequest->getUser()->addRole($role);
             }
             $userRole->addRole($role);
@@ -193,7 +266,7 @@ class AdminController extends AbstractController
             empty($data_form['reason']) ? true : $vRequest->setReason($data_form['reason']);
             empty($data_form['status']) ? true : $vRequest->setStatus($data_form['status']);
 
-            $role = $this->roleRepository->findOneBy(['id'=> 3]);
+            $role = $this->roleRepository->findOneBy(['id' => 3]);
             $userRole = $userDetail->removeRole($role);
 
             $updatedRequest = $this->vRequestRepository->revoke($vRequest, $userRole);

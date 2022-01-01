@@ -57,8 +57,15 @@
         {% endfor %}
     </ul>
 
-    <p>order by date created ASC DESC</p>
-    <p>filter by user</p>
+    <p>order by date created <a href='{{ path('get_requests', {o: 'ASC'}) }}'>ASC</a> <a href='{{ path('get_requests', {o: 'DESC'}) }}'>DESC</a></p>
+
     <p>filter by status</p>
+    {% for stats in status %}
+        <small><a href='{{ path('get_requests', {sid: stats.id}) }}'>{{ stats.name }}</a></small> 
+    {% else %}
+        <p><small>No status found</small></p>
+    {% endfor %}
+
+    <p>filter by user ID<small><a href='{{ path('get_requests', {uid: 'ASC'}) }}'>ASC</a> <a href='{{ path('get_requests', {uid: 'DESC'}) }}'>DESC</a></small></p>
 </div>
 {% endblock %}

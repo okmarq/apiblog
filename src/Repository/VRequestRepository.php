@@ -97,6 +97,39 @@ class VRequestRepository extends ServiceEntityRepository
     }
     */
 
+    public function orderByCreated(string $o = 'ASC'): array
+    {
+        return $this->createQueryBuilder('vr')
+            // ->andWhere('vr.exampleField = :val')
+            // ->setParameter('val', $value)
+            ->orderBy('vr.createdAt', $o)
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function filterByUser(string $uid = 'ASC'): array
+    {
+        return $this->createQueryBuilder('vr')
+            // ->andWhere('vr.exampleField = :val')
+            // ->setParameter('val', $value)
+            ->orderBy('vr.user', $uid)
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function filterByStatus(int $sid = 1): array
+    {
+        return $this->createQueryBuilder('vr')
+            ->andWhere('vr.status = ' . $sid)
+            // ->setParameter('val', $value)
+            // ->orderBy('vr.created_at', 'ASC')
+            // ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
     /*
     public function findOneBySomeField($value): ?VRequest
     {
