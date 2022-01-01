@@ -1,0 +1,55 @@
+version: 2.1
+
+orbs:
+  symfony: lolautruche/symfony@0.1.0
+  heroku: circleci/heroku@1.2.6
+
+jobs:
+  integration_tests:
+    docker:
+      - image: "circleci/php:7.4-fpm-node"
+
+    steps:
+      - checkout
+      - symfony/install
+      - symfony/local_server_run
+
+  deploy:
+    executor: heroku/default
+    steps:
+      - checkout
+      - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
+      - run: sudo docker-php-ext-install zip
+      - heroku/install  
+      - restore_cache:
+          keys:
+            # "composer.lock" can be used if it is committed to the repo
+            - v1-dependencies-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          command: composer install -n --prefer-dist
+            echo "The command above installs Heroku, the command below deploys.
+            What you do inbetween is up to you!"
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "composer.json" }}
+          paths:
+            - ./vendor
+        
+      - run:
+          name: "Run tests"
+          command: composer test
+
+      - heroku/deploy-via-git
+
+workflows:
+  heroku_deploy:
+    jobs:
+      - heroku/deploy-via-git:
+          post-steps:
+            - run: your-database-migration-command
+
+          pre-steps:
+            - run: command-that-run-before-deploying
