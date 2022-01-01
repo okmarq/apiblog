@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\VResponseType;
 use App\Repository\RoleRepository;
+use App\Repository\UserRepository;
 use App\Repository\VRequestRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,12 +20,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends AbstractController
 {
     private $vRequestRepository;
+    private $userRepository;
     private $roleRepository;
     private $mailer;
 
-    public function __construct(VRequestRepository $vRequestRepository, RoleRepository $roleRepository, MailerInterface $mailer)
+    public function __construct(VRequestRepository $vRequestRepository, RoleRepository $roleRepository, UserRepository $userRepository, MailerInterface $mailer)
     {
         $this->vRequestRepository = $vRequestRepository;
+        $this->userRepository = $userRepository;
         $this->roleRepository = $roleRepository;
         $this->mailer = $mailer;
     }
@@ -120,7 +123,7 @@ class AdminController extends AbstractController
             $user = $vRequest->getUser()->getFirstname() . ' ' . $vRequest->getUser()->getLastname();
             $user_email = $vRequest->getUser()->getEmail();
 
-            $res = $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
+            $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
 
             $this->json($updatedRequest, Response::HTTP_OK);
             return $this->redirectToRoute('get_requests');
@@ -151,6 +154,7 @@ class AdminController extends AbstractController
         $user = $this->getUser();
 
         $vRequest = $this->vRequestRepository->findOneBy(['id' => $id]);
+        $userDetail = $this->userRepository->findOneBy(['id' => $vRequest->getUser()->getId()]);
 
         $data = [
             'id' => $vRequest->getId(),
@@ -189,11 +193,8 @@ class AdminController extends AbstractController
             empty($data_form['reason']) ? true : $vRequest->setReason($data_form['reason']);
             empty($data_form['status']) ? true : $vRequest->setStatus($data_form['status']);
 
-            $userRole = $vRequest->getUser();
-            if ($status->getId() == 3) {
-                $role = $this->roleRepository->findOneBy(['id'=> 3]);
-                $userRole->removeRole($role);
-            }
+            $role = $this->roleRepository->findOneBy(['id'=> 3]);
+            $userRole = $userDetail->removeRole($role);
 
             $updatedRequest = $this->vRequestRepository->revoke($vRequest, $userRole);
 
@@ -203,7 +204,7 @@ class AdminController extends AbstractController
             $user = $vRequest->getUser()->getFirstname() . ' ' . $vRequest->getUser()->getLastname();
             $user_email = $vRequest->getUser()->getEmail();
 
-            $res = $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
+            $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
 
             $this->json($updatedRequest, Response::HTTP_OK);
             return $this->redirectToRoute('get_requests');
