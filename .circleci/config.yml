@@ -31,7 +31,6 @@ jobs:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
-      - run: symfony check:security
       - run:
           name: Run web server
           command: symfony console server:run
