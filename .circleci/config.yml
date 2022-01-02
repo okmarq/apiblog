@@ -16,12 +16,16 @@ jobs:
       - run: sudo apt update
       - run: sudo apt install -y libsqlite3-dev zlib1g-dev mariadb-client zlib1g-dev
       - run: sudo composer self-update
-      - heroku/install
+      # - heroku/install
 
       - restore_cache:
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
             - composer-v1-
+
+      - run:
+          name: "Create Environment file"
+          command: mv .env.test .env
 
       - run:
           name: "Install Dependencies"
@@ -40,7 +44,6 @@ jobs:
       - run:
           name: "Run PhpUnit tests"
           command: php ./bin/phpunit
-
 # workflows:
 #   heroku_deploy:
 #     jobs:
@@ -51,7 +54,7 @@ jobs:
 #           filters:
 #             branches:
 #               only: main
-          # pre-steps:
-          #   - run: command-that-run-before-deploying
-          # post-steps:
-          #   - run: php bin/console doctrine:datebase:create
+# pre-steps:
+#   - run: command-that-run-before-deploying
+# post-steps:
+#   - run: php bin/console doctrine:datebase:create
