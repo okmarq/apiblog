@@ -46,34 +46,40 @@ run migrations
 ##### Admin
 
 Username: Admin
+
 Password: admin
 
 ###### Admin permissions
 
 can create read update and delete posts
+
 can create read and update all requests
 
 ##### User
 
 Username: User
+
 Password: user
 
 ###### User permissions
 
 can read posts only
+
 can create read and update request
 
 ##### Blogger
 
 Username: Blogger
+
 Password: blogger
 
 ###### Blogger permissions
 
 can create read update and delete posts
+
 can read own request only
 
 [^note]:
     styling sparsely or never used.
-    functionality was my primary aim, however, I am capable of frontend development, using various libraries and frameworks. 
-    tailwind is my most likely goto css library 
+    functionality was my primary aim, however, I am capable of frontend development, using various libraries and frameworks.
+    tailwind is my most likely goto css library
