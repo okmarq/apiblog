@@ -55,8 +55,7 @@ workflows:
           filters:
             branches:
               only: main
-          pre-steps:
-            - run: heroku config:set APP_ENV=prod
-            - run: heroku config:set APP_SECRET=$(php -r 'echo bin2hex(random_bytes(16));')
+          # pre-steps:
+            # - run: heroku config:set APP_ENV=prod
           # post-steps:
           #   - run: php bin/console doctrine:datebase:create
