@@ -16,10 +16,7 @@ class PostType extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
-            ->add('content', TextareaType::class)
-            ->add('save', SubmitType::class, [
-                'label' => 'Save'
-            ]);
+            ->add('content', TextareaType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -40,6 +40,9 @@ class VRequestController extends AbstractController
             'message' => $vRequest->getMessage(),
             'status' => $vRequest->getStatus()->getName(),
             'role' => implode(', ', $vRequest->getUser()->getRoles()),
+            'vr_firstname' => $vRequest->getUser()->getFirstname(),
+            'vr_lastname' => $vRequest->getUser()->getLastname(),
+            'email' => $vRequest->getUser()->getEmail(),
             'reason' => ($vRequest->getReason()) ? $vRequest->getReason() : 'please wait for a response',
             'createdAt' => $vRequest->getCreatedAt()->format('Y-m-d H:i:s'),
             'modifiedAt' => ($vRequest->getModifiedAt()) ? $vRequest->getModifiedAt()->format('Y-m-d H:i:s') : null,
@@ -52,6 +55,9 @@ class VRequestController extends AbstractController
         return $this->render('v_request/show.html.twig', [
             'firstname' => $user->getFirstname(),
             'lastname' => $user->getLastname(),
+            'vr_firstname'=> $data['vr_firstname'],
+            'vr_lastname'=> $data['vr_lastname'],
+            'email'=> $data['email'],
             'id' => $data['id'],
             'idImage' => $data['idImage'],
             'message' => $data['message'],
@@ -79,8 +85,9 @@ class VRequestController extends AbstractController
         } else {
             $data[] = [
                 'id' => $vRequest->getId(),
-                'firstname' => $vRequest->getUser()->getFirstname(),
-                'lastname' => $vRequest->getUser()->getLastname(),
+                'vr_firstname' => $vRequest->getUser()->getFirstname(),
+                'vr_lastname' => $vRequest->getUser()->getLastname(),
+                'email' => $vRequest->getUser()->getEmail(),
                 'role' => implode(', ', $vRequest->getUser()->getRoles()),
                 'idImage' => $vRequest->getIdImage(),
                 'message' => $vRequest->getMessage(),

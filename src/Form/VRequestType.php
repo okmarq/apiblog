@@ -32,9 +32,6 @@ class VRequestType extends AbstractType
             ])
             ->add('message', TextareaType::class, [
                 'data' => "I'd like to request the role of blogger"
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Send'
             ]);
     }
 

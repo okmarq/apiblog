@@ -31,17 +31,16 @@
             <ul class='flex gap-2'>
                 <div class='space-y-4 flex-1'>
                     <li><b>User:</b> {{ vr_firstname }} {{ vr_lastname }} </li>
-                    <li><b>Roles:</b> {{ role }}</li>
                     <li><b>Email:</b> {{ email }}</li>
                     <li class='w-48 h-48'><b>ID:</b> <img class='object-contain' src="{{ asset('uploads/images/' ~ idImage) }}" alt="ID image"></li>
                 </div>
                 
                 <div class='space-y-4 flex-1'>
                     <li><b>Message:</b> {{ message }}</li>
-                    <li><b>Current </b>status: {{ status }}</li>
-                    <li><b>Current </b>role: {{ role }}</li>
-                    <li><b>Request </b>made at: {{ createdAt }}</li>
-                    <li><b>Request </b>modified at: {{ modifiedAt }}</li>
+                    <li><b>Current status:</b> {{ status }}</li>
+                    <li><b>Current role:</b> {{ role }}</li>
+                    <li><b>Request >made at:</b> {{ createdAt }}</li>
+                    <li><b>Request modified at:</b> {{ modifiedAt }}</li>
                     <span><b>Admin's reason:</b> {{ reason }}</span>
                 </div>
             </ul>
@@ -52,7 +51,7 @@
             {{ form_start(form) }}
                 {{ form_row(form.status, {label_class: 'font-semibold'}) }}
                 {{ form_row(form.reason, {label_class: 'font-semibold'}) }}
-                {{ form_row(form.save, {save_class: 'p-2 w-full rounded-sm block bg-blue-700 border font-semibold'}) }}
+                <button type="submit" class="text-white p-2 w-full rounded-sm block bg-blue-700 border">Respond</button>
             {{ form_end(form) }}
         </div>
     </div>
