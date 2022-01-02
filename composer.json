@@ -29,6 +29,7 @@
         "symfony/mailer": "5.4.*",
         "symfony/maker-bundle": "^1.36",
         "symfony/mime": "5.4.*",
+        "symfony/monolog-bundle": "^3.7",
         "symfony/property-access": "5.4.*",
         "symfony/property-info": "5.4.*",
         "symfony/proxy-manager-bridge": "5.4.*",
@@ -72,7 +73,7 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
-            ""
+            "@auto-scripts"
         ],
         "post-update-cmd": [
             "@auto-scripts"
