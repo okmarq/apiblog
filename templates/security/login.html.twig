@@ -3,35 +3,43 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<header class='fixed top-0 w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
-    <div class='h1 text-lg font-bold'>Locastic Blog API</div>
+<header class='w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
+    <div class='h1 text-2xl text-white font-bold'>
+        <a href='{{ path('home') }}'>Locastic Blog API</a>
+    </div>
 
-    {% if app.user %}
-        <div class="">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% endif %}
+    <div class="mb-1 text-lg flex items-center justify-between space-x-5">
+        {% if app.user %}
+            <a class='text-white' href="{{ path('get_requests') }}">Admin</a>
+            <a class='text-white' href="{{ path('dashboard') }}">Dashboard</a>
+            <a class='text-white' href="{{ path('posts') }}">Blog</a>
+            <a class='text-white' href="{{ path('app_logout') }}">Logout</a>
+        {% else %}
+            <a class='text-white' href="{{ path('app_login') }}">Login</a>
+            <a class='text-blue-700 py-2 px-3 bg-white rounded' href="{{ path('app_register') }}">Register</a>
+        {% endif %}
+    </div>
 </header>
+        
+<h2 class="h2 text-xl mb-5 font-bold text-center">Please sign in</h2>
 
-<div class='mt-24 border-gray-300 p-2 mx-auto max-w-sm rounded-xl shadow-lg flex items-center justify-center'>
+<div class='pb-6 border-gray-300 mx-auto max-w-md rounded-xl shadow-lg flex items-center justify-center'>
     <form method="post">
         {% if error %}
             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
 
-        
-        <h3 class="h3 mb-5 text-center text-xl font-bold">Please sign in</h3>
-        <div class='m-10'>
-            <label class='text-lg font-semibold' for="inputEmail">Email</label>
+        <div class='mb-3'>
+            <label class='font-semibold' for="inputEmail">Email</label>
             <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control p-2 w-full rounded-sm border" autocomplete="email" required autofocus>
         </div>
 
-        <div class='m-10'>
-            <label class='text-lg font-semibold' for="inputPassword">Password</label>
+        <div class='mb-3'>
+            <label class='font-semibold' for="inputPassword">Password</label>
             <input type="password" name="password" id="inputPassword" class="form-control p-2 w-full rounded-sm border" autocomplete="current-password" required>
         </div>
 
-        <div>
+        <div class='mb-3'>
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
         <div>
         
@@ -40,13 +48,13 @@
             See https://symfony.com/doc/current/security/remember_me.html
 
             <div class="checkbox mb-3">
-                <label>
+                <label class='font-semibold'>
                     <input type="checkbox" name="_remember_me"> Remember me
                 </label>
             </div>
         #}
 
-        <div class='m-10'>
+        <div class='mb-3'>
             <button class="p-2 w-full rounded-sm block bg-blue-700 border" type="submit">
                 Sign in
             </button>

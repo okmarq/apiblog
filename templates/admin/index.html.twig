@@ -3,69 +3,90 @@
 {% block title %}Hello VRequestController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<header class='w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
+    <div class='h1 text-2xl text-white font-bold'>
+        <a href='{{ path('home') }}'>Locastic Blog API</a>
+    </div>
 
-<div class="example-wrapper">
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% else %}
-        <div class="mb-3">
-            <a href="{{ path('app_register') }}">Register</a> | <a href="{{ path('app_login') }}">Login</a>
-        </div>
-    {% endif %}
-
-    <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
-
-    <p>This friendly message is coming from Locastic Blog API ✅:</p>
-    <p>You are the admin here. Your roles are isted below.</p>
-    <ul>
-        <li>send mail ✅</li>
-        <li>see user requests ✅</li>
-        <li>act on user requests ✅</li>
-    </ul>
-    <p>List of verification requests:</p>
-
-    <ul>
-        {#% if(filter = 'filter_user') %#}
-
-        {#% elseif(filter = 'filter_status') %#}
-
-        {#% elseif(filter = 'order_date') %#}
-
-        {#% else %#}
-
-        {#% endif %#}
-
-        {% for request in data %}
-            <li>
-                <b>{{ request.firstname }} {{ request.lastname }}</b>
-                {% if(request.status == "Verification requested") %}
-                    <a href='{{ path('respond', {id: request.id}) }}'>Respond</a>
-                {% elseif(request.status == "Approved") %}
-                    <a href='{{ path('revoke', {id: request.id}) }}'>Revoke</a>
-                {% elseif(request.status == "Denied") %}
-                    <a href='{{ path('respond', {id: request.id}) }}'>Reconsider</a>
-                {% endif %}
-            </li>
+    <div class="mb-1 text-lg flex items-center justify-between space-x-5">
+        {% if app.user %}
+            <a class='text-white' href="{{ path('get_requests') }}">Admin</a>
+            <a class='text-white' href="{{ path('dashboard') }}">Dashboard</a>
+            <a class='text-white' href="{{ path('posts') }}">Blog</a>
+            <a class='text-white' href="{{ path('app_logout') }}">Logout</a>
         {% else %}
-            <span>No requests found</span>
-        {% endfor %}
-    </ul>
+            <a class='text-white' href="{{ path('app_login') }}">Login</a>
+            <a class='text-blue-700 py-2 px-3 bg-white rounded' href="{{ path('app_register') }}">Register</a>
+        {% endif %}
+    </div>
+</header>
 
-    <p>order by date created <a href='{{ path('get_requests', {o: 'ASC'}) }}'>ASC</a> <a href='{{ path('get_requests', {o: 'DESC'}) }}'>DESC</a></p>
+<h2 class='h2 text-4xl font-bold text-center'>Hello {{ firstname }} {{ lastname }}! ✅</h1>
 
-    <p>filter by status</p>
-    {% for stats in status %}
-        <small><a href='{{ path('get_requests', {sid: stats.id}) }}'>{{ stats.name }}</a></small> 
-    {% else %}
-        <p><small>No status found</small></p>
-    {% endfor %}
+<h3 class='text-lg mb-1 text-center'>This friendly message is coming from Locastic Blog API: ✅</h3>
 
-    <p>filter by user ID<small><a href='{{ path('get_requests', {uid: 'ASC'}) }}'>ASC</a> <a href='{{ path('get_requests', {uid: 'DESC'}) }}'>DESC</a></small></p>
+<div class="p-1 m-10 rounded-xl shadow-lg">
+    <div class='flex w-full gap-2'>
+        <div class='p-2 w-80 border rounded border-gray-800'>
+            <p class='font-semibold mb-2'>As the admin here, your permissions include the highlighted</p>
+            <ul class='space-y-2'>
+                <li>send mail ✅</li>
+                <li>see user requests ✅</li>
+                <li>act on user requests ✅</li>
+            </ul>
+        </div>
+
+        <div class='flex justify-between p-2 grow w-auto border rounded border-gray-800'>
+            <div class='pl-2'>
+                <p class='font-semibold text-lg'>List of verification requests:</p>
+                <ul class='space-y-1'>
+                    {% for request in data %}
+                        <li>
+                            <b class='font-semibold'>{{ request.firstname }} {{ request.lastname }}</b>
+                            {% if(request.status == "Verification requested") %}
+                                <a href='{{ path('respond', {id: request.id}) }}'><em>Respond</em></a>
+                            {% elseif(request.status == "Approved") %}
+                                <a href='{{ path('revoke', {id: request.id}) }}'><em>Revoke</em></a>
+                            {% elseif(request.status == "Denied") %}
+                                <a href='{{ path('respond', {id: request.id}) }}'><em>Reconsider</em></a>
+                            {% endif %}
+                        </li>
+                    {% else %}
+                        <span>No requests found</span>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class='flex gap-4 h-28'>
+                <div class='flex flex-col border border-zinc-600 p-2 h-auto rounded'>
+                    <p><b>order</b> <em>by date</em></p>
+
+                    <span>
+                        <a class='text-blue-700' href='{{ path('get_requests', {o: 'ASC'}) }}'>ASC</a>
+                        <a class='text-emerald-800' href='{{ path('get_requests', {o: 'DESC'}) }}'>DESC</a>
+                    </span>
+                </div>
+
+                <div class='flex flex-col border border-zinc-600 p-2 h-auto rounded'>
+                    <p><b>filter</b> <em>by status</em></p>
+
+                    {% for stats in status %}
+                        <p class='text-blue-700'><small><a href='{{ path('get_requests', {sid: stats.id}) }}'>{{ stats.name }}</a></small></p>
+                    {% else %}
+                        <p class='text-blue-700'><small>No status found</small></p>
+                    {% endfor %}
+                </div> 
+
+                <div class='flex flex-col border border-zinc-600 p-2 h-auto rounded'>
+                    <p><b>filter</b> <em>by user ID</em></p>
+
+                    <span class=''>
+                        <a class='text-blue-700' href='{{ path('get_requests', {uid: 'ASC'}) }}'>ASC</a>
+                        <a class='text-emerald-800' href='{{ path('get_requests', {uid: 'DESC'}) }}'>DESC</a>
+                    <span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

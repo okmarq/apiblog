@@ -3,38 +3,41 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-        <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
-    {% else %}
-        <h1>Hello {{ guest }}! ✅</h1>
-    {% endif %}
+<header class='w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
+    <div class='h1 text-2xl text-white font-bold'>
+        <a href='{{ path('home') }}'>Locastic Blog API</a>
+    </div>
 
-    <p>You're welcome! ✅</p>
-
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% else %}
-        <div class="mb-3">
-            <a href="{{ path('app_register') }}">Register</a> | <a href="{{ path('app_login') }}">Login</a>
-        </div>
-    {% endif %}
-
-
-    <p>This friendly message is coming from Locastic Blog API:</p>
-    
-    <ul>
-        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <li>Go to your <a href="{{ path('dashboard') }}">dashboard page</a> to see our blog posts</li>
+    <div class="mb-1 text-lg flex items-center justify-between space-x-5">
+        {% if app.user %}
+            <a class='text-white' href="{{ path('get_requests') }}">Admin</a>
+            <a class='text-white' href="{{ path('dashboard') }}">Dashboard</a>
+            <a class='text-white' href="{{ path('posts') }}">Blog</a>
+            <a class='text-white' href="{{ path('app_logout') }}">Logout</a>
         {% else %}
-            <li><a href="{{ path('app_register') }}">Register</a> or <a href="{{ path('app_login') }}">Login</a> to see our blog posts</li>
+            <a class='text-white' href="{{ path('app_login') }}">Login</a>
+            <a class='text-blue-700 py-2 px-3 bg-white rounded' href="{{ path('app_register') }}">Register</a>
+        {% endif %}
+    </div>
+</header>
+
+<div class="p-10 border-gray-300 mx-auto max-w-xl rounded-xl shadow-lg">
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <h2 class='h2 text-4xl font-bold text-center'>Hello {{ firstname }} {{ lastname }}! ✅</h1>
+    {% else %}
+        <h2 class='h2 text-4xl font-bold text-center'>Hello {{ guest }}! ✅</h1>
+    {% endif %}
+
+    <p class='text-lg text-center mb-3'>You're welcome! ✅</p>
+
+    <h3 class='text-lg mb-5'>This friendly message is coming from Locastic Blog API: ✅</h3>
+    
+    <ul class='space-y-6 text-lg font-semibold'>
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <li>Go to your <a class='text-amber-600' href="{{ path('dashboard') }}">dashboard page</a> to see our blog posts</li>
+        {% else %}
+            <li><a class='text-blue-700' href="{{ path('app_register') }}">Register</a> or <a class='text-blue-700' href="{{ path('app_login') }}">Login</a> to see our blog posts</li>
         {% endif %}
 
         {% if is_granted('ROLE_BLOGGER') %}
