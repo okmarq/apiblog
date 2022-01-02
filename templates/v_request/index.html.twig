@@ -3,55 +3,78 @@
 {% block title %}Hello VRequestController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<header class='w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
+    <div class='h1 text-2xl text-white font-bold'>
+        <a href='{{ path('home') }}'>Locastic Blog API</a>
+    </div>
 
-<div class="example-wrapper">
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+    <div class="mb-1 text-lg flex items-center justify-between space-x-5">
+        {% if app.user %}
+            <a class='text-white' href="{{ path('get_requests') }}">Admin</a>
+            <a class='text-white' href="{{ path('dashboard') }}">Dashboard</a>
+            <a class='text-white' href="{{ path('posts') }}">Blog</a>
+            <a class='text-white' href="{{ path('app_logout') }}">Logout</a>
+        {% else %}
+            <a class='text-white' href="{{ path('app_login') }}">Login</a>
+            <a class='text-blue-700 py-2 px-3 bg-white rounded' href="{{ path('app_register') }}">Register</a>
+        {% endif %}
+    </div>
+</header>
+
+<h2 class='mt-24 h2 text-4xl font-bold text-center'>Hello {{ firstname }} {{ lastname }}! ✅</h1>
+
+<h3 class='text-lg mb-1 text-center'>This friendly message is coming from Locastic Blog API Admin: ✅</h3>
+<p class='text-lg mb-2 text-center'>Submit your request in the form below</p>
+
+<div class="p-1 m-10 rounded-xl shadow-lg">
+    <div class='flex gap-4 p-2'>
+        <div class='grow border rounded border-zinc-600 p-2'>
+            <ul class='flex gap-2 relative'>
+                {% for datum in data %}
+                    {% if(datum.status != "none") %}
+                        <div class='space-y-4 flex-1'>
+                            <li><b>User:</b> {{ datum.vr_firstname }} {{ datum.vr_lastname }} </li>
+                            <li><b>Email:</b> {{ datum.email }}</li>
+                            <li><b>Request:</b> {{ datum.status }}</li>
+                            <li class='w-48 h-48'><b>ID:</b> <img class='object-contain' src="{{ asset('uploads/images/' ~ datum.idImage) }}" alt="ID image"></li>
+                        </div>
+
+                        <div class='space-y-4 flex-1'>
+                            <li><b>Current role:</b> {{ datum.role}}</li>
+                            <li><b>Message:</b> {{ datum.message }}</li>
+                            <li><b>Response:</b> {{ datum.reason }}</li>
+                            <li><b>Created at:</b> {{ datum.createdAt }}</li>
+                            <li><b>Updated at:</b> {{ datum.modifiedAt ?? 'no update yet' }}</li>
+                        </div>
+
+                        {% if controller_name == 'Create' %}
+                            <a class='text-blue-700 absolute bottom-2 right-2' href="{{ path('update_request', {id: datum.id}) }}">Update request</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </div>
-    {% else %}
-        <div class="mb-3">
-            <a href="{{ path('app_register') }}">Register</a> | <a href="{{ path('app_login') }}">Login</a>
-        </div>
-    {% endif %}
 
-    <h1>Hello {{ firstname }} {{ lastname }}! ✅</h1>
-
-    {% if controller_name == 'Create' %}
-        <p>making request</p>
-    {% else %}
-        <p>Editing request</p>
-    {% endif %}
-
-    <p>This friendly message is coming from Locastic Blog API Admin ✅:</p>
-    <ul>
-        <li>Submit your request in the form below</li>
-            
-        {{ form_start(form) }}
-            {{ form_row(form.idImage) }}
-            {{ form_row(form.message) }}
-            {{ form_row(form.save) }}
-        {{ form_end(form) }}
-
-        {% for datum in data %}
-            {% if(datum.status != "none") %}
-                <li>ID: {{ datum.idImage }}</li>
-                <li>ID: {{ datum.message }}</li>
-                <li>Request: {{ datum.status }}</li>
-                <li>Response: {{ datum.reason }}</li>
-                <li>Role: {{ datum.role}}</li>
-                <li>ID: {{ datum.createdAt }}</li>
-                <li>ID: {{ datum.modifiedAt ?? 'no update yet' }}</li>
-
-                {% if controller_name == 'Create' %}
-                    <a href="{{ path('update_request', {id: datum.id}) }}">Update request</a>
-                {% endif %}
+        <div class='w-96 border rounded border-zinc-600 p-2'>
+            {% if controller_name == 'Create' %}
+                <h3 class='h3 text-2xl mb-2 text-center font-bold'>Make request</h3>
+            {% else %}
+                <h3 class='h3 text-2xl mb-2 text-center font-bold'>Edit request</h3>
             {% endif %}
-        {% endfor %}
-    </ul>
+
+            {{ form_start(form) }}
+                <div class='mb-2'>
+                    {{ form_row(form.idImage, {label_class: 'font-semibold'}) }}
+                </div>
+                
+                <div class='mb-2'>
+                    {{ form_row(form.message, {label_class: 'font-semibold'}) }}
+                </div>
+                
+                <button type="submit" class="text-white p-2 w-full rounded-sm block bg-blue-700 border">Request</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
 </div>
+
 {% endblock %}

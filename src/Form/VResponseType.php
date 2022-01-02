@@ -22,9 +22,6 @@ class VResponseType extends AbstractType
             ->add('status', EntityType::class, [
                 'class' => Status::class,
                 'choice_label' => 'name'
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Respond'
             ]);
     }
 

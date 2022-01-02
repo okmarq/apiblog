@@ -3,40 +3,62 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+<header class='w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
+    <div class='h1 text-2xl text-white font-bold'>
+        <a href='{{ path('home') }}'>Locastic Blog API</a>
+    </div>
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+    <div class="mb-1 text-lg flex items-center justify-between space-x-5">
+        {% if app.user %}
+            <a class='text-white' href="{{ path('get_requests') }}">Admin</a>
+            <a class='text-white' href="{{ path('dashboard') }}">Dashboard</a>
+            <a class='text-white' href="{{ path('posts') }}">Blog</a>
+            <a class='text-white' href="{{ path('app_logout') }}">Logout</a>
+        {% else %}
+            <a class='text-white' href="{{ path('app_login') }}">Login</a>
+            <a class='text-blue-700 py-2 px-3 bg-white rounded' href="{{ path('app_register') }}">Register</a>
+        {% endif %}
+    </div>
+</header>
+        
+<h2 class="h2 text-xl mb-5 font-bold text-center">Please sign in</h2>
+
+<div class='pb-6 border-gray-300 mx-auto max-w-md rounded-xl shadow-lg flex items-center justify-center'>
+    <form method="post">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <div class='mb-3'>
+            <label class='font-semibold' for="inputEmail">Email</label>
+            <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control p-2 w-full rounded-sm border" autocomplete="email" required autofocus>
         </div>
-    {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
-
-    {#
-        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-        See https://symfony.com/doc/current/security/remember_me.html
-
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" name="_remember_me"> Remember me
-            </label>
+        <div class='mb-3'>
+            <label class='font-semibold' for="inputPassword">Password</label>
+            <input type="password" name="password" id="inputPassword" class="form-control p-2 w-full rounded-sm border" autocomplete="current-password" required>
         </div>
-    #}
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+        <div class='mb-3'>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        <div>
+        
+        {#
+            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+            See https://symfony.com/doc/current/security/remember_me.html
+
+            <div class="checkbox mb-3">
+                <label class='font-semibold'>
+                    <input type="checkbox" name="_remember_me"> Remember me
+                </label>
+            </div>
+        #}
+
+        <div class='mb-3'>
+            <button class="p-2 w-full rounded-sm block bg-blue-700 border" type="submit">
+                Sign in
+            </button>
+        </div>
+    </form>
+</div>
 {% endblock %}
