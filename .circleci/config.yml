@@ -1,60 +1,56 @@
 version: 2.1
 
-orbs:
-  heroku: circleci/heroku@1.2.6
+# orbs:
+#   heroku: circleci/heroku@1.2.6
 
 jobs:
   build:
     docker:
       - image: "cimg/php:8.1.1"
-        environment:
-          MYSQL_HOST: 127.0.0.1
-          MYSQL_DB: locastic
-          MYSQL_USER: root
-          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-          MYSQL_PASSWORD: ""
+
     working_directory: ~/apiblog
 
     steps:
       - checkout
+
       - run: sudo apt update
       - run: sudo apt install -y libsqlite3-dev zlib1g-dev mariadb-client zlib1g-dev
       - run: sudo composer self-update
       - heroku/install
+
       - restore_cache:
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
             - composer-v1-
 
-      - run: composer install -n --prefer-dist --no-scripts
+      - run:
+          name: "Install Dependencies"
+          command: composer install -n --prefer-dist --no-scripts
+
       - save_cache:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
-            - vendor
-      # - run:
-      #     name: Run web server
-      #     command: php bin/console server:start
-      #     background: true
+            - ./vendor
+
+      - run:
+          name: Run web server
+          command: php bin/console server:start
+          background: true
+
       - run:
           name: "Run PhpUnit tests"
           command: php ./bin/phpunit
-      - store_artifacts:
-          path: phpunit/apiblog/docs/
-          destination: circleci-docs
-      - store_test_results:
-          path: test-results
 
-
-workflows:
-  heroku_deploy:
-    jobs:
-      - build
-      - heroku/deploy-via-git:
-          requires:
-            - build
-          filters:
-            branches:
-              only: main
+# workflows:
+#   heroku_deploy:
+#     jobs:
+#       - build
+#       - heroku/deploy-via-git:
+#           requires:
+#             - build
+#           filters:
+#             branches:
+#               only: main
           # pre-steps:
           #   - run: command-that-run-before-deploying
           # post-steps:
