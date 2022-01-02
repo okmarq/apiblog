@@ -17,9 +17,9 @@ An API for a demo blog application using Symfony 5 and ApiPlatform covered with 
 ### Installing locally
 
 ```bash
-git clone [https://github.com/okmarq/apiblog.git](https://github.com/okmarq/apiblog) HTTPS
-git clone [git@github.com:okmarq/apiblog.git](https://github.com/okmarq/apiblog) SSH
-git clone [gh repo clone okmarq/apiblog](https://github.com/okmarq/apiblog) 
+git clone https://github.com/okmarq/apiblog.git HTTPS
+git clone git@github.com:okmarq/apiblog.git SSH
+git clone gh repo clone okmarq/apiblog
 GitHub CLI
 ```
 
