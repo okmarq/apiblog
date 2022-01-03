@@ -43,9 +43,9 @@ run migrations
 
 ##### Admin
 
-Username: Admin
+Email: admin@admin.com
 
-Password: admin
+Password: admin123
 
 ###### Admin permissions
 
@@ -55,9 +55,9 @@ can create read and update all requests
 
 ##### User
 
-Username: User
+Email: user@user.com
 
-Password: user
+Password: user123
 
 ###### User permissions
 
@@ -67,9 +67,9 @@ can create read and update request
 
 ##### Blogger
 
-Username: Blogger
+Email: blogger@blogger.com
 
-Password: blogger
+Password: blogger123
 
 ###### Blogger permissions
 

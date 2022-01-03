@@ -44,11 +44,11 @@
                         <li>
                             <b class='font-semibold'>{{ request.firstname }} {{ request.lastname }}</b>
                             {% if(request.status == "Verification requested") %}
-                                <a href='{{ path('respond', {id: request.id}) }}'><em>Respond</em></a>
+                                <a class='text-green-700' href='{{ path('respond', {id: request.id}) }}'><em>Respond</em></a>
                             {% elseif(request.status == "Approved") %}
-                                <a href='{{ path('revoke', {id: request.id}) }}'><em>Revoke</em></a>
+                                <a class='text-red-700' href='{{ path('revoke', {id: request.id}) }}'><em>Revoke</em></a>
                             {% elseif(request.status == "Denied") %}
-                                <a href='{{ path('respond', {id: request.id}) }}'><em>Reconsider</em></a>
+                                <a class='text-blue-700' href='{{ path('respond', {id: request.id}) }}'><em>Reconsider</em></a>
                             {% endif %}
                         </li>
                     {% else %}

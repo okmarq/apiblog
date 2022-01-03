@@ -38,8 +38,10 @@
                 <smal><a class='text-blue-700' href='{{ path('show_post', {id: post.id}) }}'>Read</a></small>
             </li>
         {% else %}
-            <p>no post found</p>
+            <li class='text-lg'>
+                <p>No post found</p>
+            </li>
         {% endfor %}
-    </div>
+    </ul>
 </div>
 {% endblock %}
