@@ -21,7 +21,7 @@ git clone git@github.com:okmarq/apiblog.git
 git clone gh repo clone okmarq/apiblog
 ```
 
-rename ***.env.example*** to **.env** and configure `DATABASE_URL` and `MAILER_DSN` to suit your needs
+rename ***.env.example*** to **.env** then configure `DATABASE_URL` and `MAILER_DSN` to suit your needs
 
 ```bash
 composer install
