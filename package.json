@@ -23,5 +23,8 @@
     },
     "dependencies": {
         "@tailwindcss/forms": "^0.4.0"
+    },
+    "optionalDependencies": {
+        "fsevents": "*"
     }
 }
