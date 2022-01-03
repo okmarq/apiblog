@@ -15,12 +15,10 @@ An API for a demo blog application using Symfony 5 and ApiPlatform covered with 
 [apiblog](https://github.com/okmarq/apiblog)
 
 ### Installing locally
-
 ```bash
-git clone https://github.com/okmarq/apiblog.git HTTPS
-git clone git@github.com:okmarq/apiblog.git SSH
+git clone https://github.com/okmarq/apiblog.git
+git clone git@github.com:okmarq/apiblog.git
 git clone gh repo clone okmarq/apiblog
-GitHub CLI
 ```
 
 rename ***.env.example*** to **.env** and configure `DATABASE_URL` and `MAILER_DSN` to suit your needs
