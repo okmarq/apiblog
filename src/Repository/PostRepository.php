@@ -31,8 +31,7 @@ class PostRepository extends ServiceEntityRepository
         //     ->setUser($user)
         //     ->setTitle($title)
         //     ->setSlug($slug)
-        //     ->setContent($content)
-        //     ->setCreatedAt($created);
+        //     ->setContent($content);
 
         $this->manager->persist($post);
         $this->manager->flush();

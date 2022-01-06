@@ -153,7 +153,7 @@ class AdminController extends AbstractController
 
             $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
 
-            $this->json($updatedRequest, Response::HTTP_OK);
+            // $this->json($updatedRequest, Response::HTTP_OK);
             return $this->redirectToRoute('get_requests');
         }
 
@@ -234,7 +234,7 @@ class AdminController extends AbstractController
 
             $this->sendMail($reason, $statusName, $admin, $admin_email, $user, $user_email);
 
-            $this->json($updatedRequest, Response::HTTP_OK);
+            // $this->json($updatedRequest, Response::HTTP_OK);
             return $this->redirectToRoute('get_requests');
         }
 

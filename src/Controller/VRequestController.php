@@ -85,8 +85,8 @@ class VRequestController extends AbstractController
         } else {
             $data[] = [
                 'id' => $vRequest->getId(),
-                'vr_firstname' => $vRequest->getUser()->getFirstname(),
-                'vr_lastname' => $vRequest->getUser()->getLastname(),
+                'firstname' => $vRequest->getUser()->getFirstname(),
+                'lastname' => $vRequest->getUser()->getLastname(),
                 'email' => $vRequest->getUser()->getEmail(),
                 'role' => implode(', ', $vRequest->getUser()->getRoles()),
                 'idImage' => $vRequest->getIdImage(),
@@ -131,11 +131,6 @@ class VRequestController extends AbstractController
 
             $res = $this->vRequestRepository->create($newImageName, $message, $user->getId());
 
-            $this->addFlash(
-                'notice',
-                'Request received. Response will be sent to ' . $user->getEmail()
-            );
-
             return $this->redirectToRoute('show_request', ['id' => $res->getId()]);
         }
 
@@ -165,6 +160,7 @@ class VRequestController extends AbstractController
                 'id' => $vRequest->getId(),
                 'firstname' => $vRequest->getUser()->getFirstname(),
                 'lastname' => $vRequest->getUser()->getLastname(),
+                'email' => $vRequest->getUser()->getEmail(),
                 'role' => implode(', ', $vRequest->getUser()->getRoles()),
                 'idImage' => $vRequest->getIdImage(),
                 'message' => $vRequest->getMessage(),

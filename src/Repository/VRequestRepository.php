@@ -39,8 +39,7 @@ class VRequestRepository extends ServiceEntityRepository
             ->setUser($user)
             ->setIdImage($idImage)
             ->setMessage($message)
-            ->setStatus($status)
-            ->setCreatedAt();
+            ->setStatus($status);
 
         $this->manager->persist($newRequest);
         $this->manager->flush();

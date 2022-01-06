@@ -15,15 +15,13 @@ An API for a demo blog application using Symfony 5 and ApiPlatform covered with 
 [apiblog](https://github.com/okmarq/apiblog)
 
 ### Installing locally
-
 ```bash
-git clone [https://github.com/okmarq/apiblog.git](https://github.com/okmarq/apiblog) HTTPS
-git clone [git@github.com:okmarq/apiblog.git](https://github.com/okmarq/apiblog) SSH
-git clone [gh repo clone okmarq/apiblog](https://github.com/okmarq/apiblog) 
-GitHub CLI
+git clone https://github.com/okmarq/apiblog.git
+git clone git@github.com:okmarq/apiblog.git
+git clone gh repo clone okmarq/apiblog
 ```
 
-rename ***.env.example*** to **.env** and configure `DATABASE_URL` and `MAILER_DSN` to suit your needs
+rename ***.env.example*** to **.env** then configure `DATABASE_URL` and `MAILER_DSN` to suit your needs
 
 ```bash
 composer install
@@ -45,35 +43,41 @@ run migrations
 
 ##### Admin
 
-Username: Admin
-Password: admin
+Email: admin@admin.com
+
+Password: admin123
 
 ###### Admin permissions
 
 can create read update and delete posts
+
 can create read and update all requests
 
 ##### User
 
-Username: User
-Password: user
+Email: user@user.com
+
+Password: user123
 
 ###### User permissions
 
 can read posts only
+
 can create read and update request
 
 ##### Blogger
 
-Username: Blogger
-Password: blogger
+Email: blogger@blogger.com
+
+Password: blogger123
 
 ###### Blogger permissions
 
 can create read update and delete posts
+
 can read own request only
 
 [^note]:
     styling sparsely or never used.
-    functionality was my primary aim, however, I am capable of frontend development, using various libraries and frameworks. 
-    tailwind is my most likely goto css library 
+    functionality was my primary aim, however, I am capable of frontend development, using various libraries and frameworks.
+    tailwind is my most likely goto css library

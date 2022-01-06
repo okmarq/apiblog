@@ -33,7 +33,7 @@
                 {% for datum in data %}
                     {% if(datum.status != "none") %}
                         <div class='space-y-4 flex-1'>
-                            <li><b>User:</b> {{ datum.vr_firstname }} {{ datum.vr_lastname }} </li>
+                            <li><b>User:</b> {{ datum.firstname }} {{ datum.lastname }} </li>
                             <li><b>Email:</b> {{ datum.email }}</li>
                             <li><b>Request:</b> {{ datum.status }}</li>
                             <li class='w-48 h-48'><b>ID:</b> <img class='object-contain' src="{{ asset('uploads/images/' ~ datum.idImage) }}" alt="ID image"></li>
@@ -43,13 +43,15 @@
                             <li><b>Current role:</b> {{ datum.role}}</li>
                             <li><b>Message:</b> {{ datum.message }}</li>
                             <li><b>Response:</b> {{ datum.reason }}</li>
-                            <li><b>Created at:</b> {{ datum.createdAt }}</li>
+                            <li><b>Requested at:</b> {{ datum.createdAt }}</li>
                             <li><b>Updated at:</b> {{ datum.modifiedAt ?? 'no update yet' }}</li>
                         </div>
 
                         {% if controller_name == 'Create' %}
                             <a class='text-blue-700 absolute bottom-2 right-2' href="{{ path('update_request', {id: datum.id}) }}">Update request</a>
                         {% endif %}
+                    {% else %}
+                        <p><b>You haven't made any request yet</b></p>
                     {% endif %}
                 {% endfor %}
             </ul>

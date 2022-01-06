@@ -42,7 +42,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string')]
     #[Groups(['read', 'write'])]
-    #[Assert\NotBlank()]
     private $password;
 
     #[ORM\Column(type: 'string', length: 32)]
