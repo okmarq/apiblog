@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello VRequestController!{% endblock %}
+
+{% block body %}
+<header class='w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
+    <div class='h1 text-2xl text-white font-bold'>
+        <a href='{{ path('home') }}'>Locastic Blog API</a>
+    </div>
+
+    <div class="mb-1 text-lg flex items-center justify-between space-x-5">
+        {% if app.user %}
+            <a class='text-white' href="{{ path('get_requests') }}">Admin</a>
+            <a class='text-white' href="{{ path('dashboard') }}">Dashboard</a>
+            <a class='text-white' href="{{ path('posts') }}">Blog</a>
+            <a class='text-white' href="{{ path('app_logout') }}">Logout</a>
+        {% else %}
+            <a class='text-white' href="{{ path('app_login') }}">Login</a>
+            <a class='text-blue-700 py-2 px-3 bg-white rounded' href="{{ path('app_register') }}">Register</a>
+        {% endif %}
+    </div>
+</header>
+
+<h2 class='mt-3 h2 text-4xl font-bold text-center'>Hello {{ firstname }} {{ lastname }}! ✅</h1>
+
+<h3 class='text-lg mb-1 text-center'>This friendly message is coming from Locastic Blog API: ✅</h3>
+
+<div class="p-1 m-10 rounded-xl shadow-lg">
+    <div class='flex gap-4 p-2'>
+        <div class='grow border rounded border-zinc-600 p-2'>
+            <ul class='flex gap-2'>
+                <div class='space-y-4 flex-1'>
+                    <li><b>User:</b> {{ vr_firstname }} {{ vr_lastname }} </li>
+                    <li><b>Email:</b> {{ email }}</li>
+                    <li class='w-48 h-48'><b>ID:</b> <img class='object-contain' src="{{ asset('uploads/images/' ~ idImage) }}" alt="ID image"></li>
+                </div>
+                
+                <div class='space-y-4 flex-1'>
+                    <li><b>Message:</b> {{ message }}</li>
+                    <li><b>Current status:</b> {{ status }}</li>
+                    <li><b>Current role:</b> {{ role }}</li>
+                    <li><b>Requested at:</b> {{ createdAt }}</li>
+                    <li><b>Updated at:</b> {{ modifiedAt }}</li>
+                    <li><b>Admin's reason:</b> {{ reason }}</li>
+                </div>
+            </ul>
+        </div>
+
+        <div class='w-96 border rounded border-zinc-600 p-2'>
+            <h3 class='h3 text-xl mb-2 text-center'><b>Response</b></h3>
+            {{ form_start(form) }}
+                {{ form_row(form.status, {label_class: 'font-semibold'}) }}
+                {{ form_row(form.reason, {label_class: 'font-semibold'}) }}
+                <button type="submit" class="text-white p-2 w-full rounded-sm block bg-blue-700 border">Respond</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

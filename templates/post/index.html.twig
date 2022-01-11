@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello VRequestController!{% endblock %}
+{% block title %}Hello PostController!{% endblock %}
 
 {% block body %}
 <header class='w-screen h-20 bg-blue-700 flex items-center justify-between px-2 sm:px-14 z-30 shadow-lg'>
@@ -22,19 +22,24 @@
 </header>
 
 <h2 class='mt-5 mb-5 h2 text-4xl font-bold text-center'>Hello {{ firstname }} {{ lastname }}! ✅</h2>
-    <p>This friendly message is coming from Locastic Blog API ✅:</p>
 
 <div class='mt-10 mb-5 pb-5 border border-gray-300 mx-auto max-w-2xl rounded-xl shadow-lg relative'>
-    <h2 class='text-center text-3xl font-bold h2'>List of verification requests:</h2>
+    {% if is_granted('ROLE_BLOGGER') %}
+        <a class='bg-blue-700 py-2 px-3 text-white rounded absolute top-2 right-2' href='{{ path('create_post') }}'>Create new</a>
+    {% else %}
+        <a class='bg-blue-700 py-2 px-3 text-white rounded absolute top-2 right-2' href='{{ path('v_request') }}'>Request Verification</a>
+    {% endif %}
+
+    <h2 class='text-center text-3xl font-bold h2'>Our Blog</h2>
     <ul class='mt-3 ml-2 space-y-3'>
-        {% for request in data %}
+        {% for post in posts %}
             <li class='text-lg'>
-                <b class='font-semibold'>{{ request.firstname }} {{ request.lastname }}</b>
-                <smal><a class='text-blue-700' href='{{ path('respond',{ id : request.id }) }}'>respond</a></small>
+                <b class='font-semibold'>{{post.title}}</b>
+                <smal><a class='text-blue-700' href='{{ path('show_post', {id: post.id}) }}'>Read</a></small>
             </li>
         {% else %}
             <li class='text-lg'>
-                <p>No request found</p>
+                <p>No post found</p>
             </li>
         {% endfor %}
     </ul>
