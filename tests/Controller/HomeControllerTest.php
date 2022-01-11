@@ -16,17 +16,8 @@ class HomeControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h2', 'Hello Reader');
     }
 
-    public function test_user_homepage(): void
-    {
-        $client = static::createClient();
-        $userRepository = static::getContainer()->get(UserRepository::class);
-
-        $testUser = $userRepository->findOneByEmail('okmarq@gmail.com');
-
-        $client->loginUser($testUser);
-
-        $crawler = $client->request('GET', '/');
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Hello Joel Okoromi');
-    }
+    // public function test_user_homepage(): void
+    // {
+    //     // code
+    // }
 }
